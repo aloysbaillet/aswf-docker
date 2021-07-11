@@ -32,17 +32,19 @@ class Builder:
     def make_bake_dict(self) -> typing.Dict[str, dict]:
         root: typing.Dict[str, dict] = {}
         root["target"] = {}
+        versions_to_bake = set()
         for image, version in self.group_info.iter_images_versions():
             major_version = utils.get_major_version(version)
             version_info = self.index.version_info(major_version)
             if self.group_info.type == constants.ImageType.PACKAGE:
-                tags = version_info.get_tags(
-                    version,
-                    self.build_info.docker_org,
-                    image,
-                    extra_suffix=version_info.package_versions.get(
-                        "ASWF_" + image.replace("ci-package-", "").upper() + "_VERSION"
-                    ),
+                if version in versions_to_bake:
+                    continue
+                versions_to_bake.add(version)
+                tags = list(
+                    map(
+                        lambda tag: f"{constants.DOCKER_REGISTRY}/{self.build_info.docker_org}/ci-centos7-gl-conan:{tag}",
+                        [version, major_version],
+                    )
                 )
                 image_base = image.replace("ci-package-", "")
                 group = self.index.get_group_from_image(
@@ -71,7 +73,7 @@ class Builder:
             }
             target_dict["args"].update(version_info.all_package_versions)
             if self.group_info.type == constants.ImageType.PACKAGE:
-                target_dict["target"] = image
+                target_dict["target"] = "ci-centos7-gl-conan"
             root["target"][f"{image}-{major_version}"] = target_dict
 
         root["group"] = {"default": {"targets": list(root["target"].keys())}}
@@ -89,12 +91,71 @@ class Builder:
             json.dump(d, f, indent=4, sort_keys=True)
         return path
 
-    def build(self, dry_run: bool = False, progress: str = "") -> None:
-        path = self.make_bake_jsonfile()
-        cmd = f"docker buildx bake -f {path} --progress {progress}"
-        logger.debug("Repo root: %s", self.build_info.repo_root)
+    def _run(self, cmd: str, dry_run: bool):
         if dry_run:
             logger.info("Would build: '%s'", cmd)
         else:
             logger.info("Building: '%s'", cmd)
             subprocess.run(cmd, shell=True, check=True, cwd=self.build_info.repo_root)
+
+    def _run_in_docker(self, base_cmd, cmd, dry_run):
+        self._run(
+            " ".join(base_cmd + cmd), dry_run=dry_run,
+        )
+
+    def build(self, dry_run: bool = False, progress: str = "") -> None:
+        path = self.make_bake_jsonfile()
+        logger.debug("Repo root: %s", self.build_info.repo_root)
+        self._run(
+            f"docker buildx bake -f {path} --progress {progress}", dry_run=dry_run
+        )
+        if self.group_info.type != constants.ImageType.PACKAGE:
+            return
+        for image, version in self.group_info.iter_images_versions(get_image=True):
+            major_version = utils.get_major_version(version)
+            version_info = self.index.version_info(major_version)
+            envs = {"CONAN_USER_HOME": "/tmp/conan", "CCACHE_DIR": "/tmp/ccache"}
+            if "CONAN_LOGIN_USERNAME" in os.environ:
+                envs["CONAN_LOGIN_USERNAME"] = os.environ["CONAN_PASSWORD"]
+            if "ARTIFACTORY_USER" in os.environ:
+                envs["CONAN_LOGIN_USERNAME"] = os.environ["ARTIFACTORY_USER"]
+            if "CONAN_PASSWORD" in os.environ:
+                envs["CONAN_PASSWORD"] = os.environ["CONAN_PASSWORD"]
+            if "ARTIFACTORY_TOKEN" in os.environ:
+                envs["CONAN_PASSWORD"] = os.environ["ARTIFACTORY_TOKEN"]
+            conan_base = os.path.join(utils.get_git_top_level(), "packages", "conan")
+            vols = {
+                os.path.join(conan_base, "settings"): "/tmp/conan/.conan",
+                os.path.join(conan_base, "recipes"): "/tmp/conan/recipes",
+                os.path.join(conan_base, "ccache"): "/tmp/ccache",
+            }
+            base_cmd = ["docker", "run", "-t"]
+            for name, value in envs.items():
+                base_cmd.append("-e")
+                base_cmd.append(f"{name}={value}")
+            for name, value in vols.items():
+                base_cmd.append("-v")
+                base_cmd.append(f"{name}:{value}")
+            tag = f"{constants.DOCKER_REGISTRY}/{self.build_info.docker_org}/ci-centos7-gl-conan:{version}"
+            base_cmd.append(tag)
+            self._run_in_docker(
+                base_cmd,
+                [
+                    "conan",
+                    "config",
+                    "set",
+                    f"general.default_profile={version_info.conan_profile}",
+                ],
+                dry_run,
+            )
+            conan_version = f"{image}/{version_info.package_versions.get('ASWF_' + image.upper() + '_VERSION')}@"
+            self._run_in_docker(
+                base_cmd,
+                ["conan", "create", f"/tmp/conan/recipes/{image}", conan_version],
+                dry_run,
+            )
+            self._run_in_docker(
+                base_cmd,
+                ["conan", "upload", "--all", "-r", "aswftesting", conan_version],
+                dry_run,
+            )

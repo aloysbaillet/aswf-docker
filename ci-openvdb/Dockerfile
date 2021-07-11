@@ -22,15 +22,6 @@ ARG ASWF_VFXPLATFORM_VERSION
 ARG ASWF_PYTHON_MAJOR_MINOR_VERSION
 
 
-FROM ${ASWF_PKG_ORG}/ci-package-boost:$ASWF_VFXPLATFORM_VERSION-$ASWF_BOOST_VERSION as ci-package-boost
-FROM ${ASWF_PKG_ORG}/ci-package-cmake:$ASWF_VFXPLATFORM_VERSION-$ASWF_CMAKE_VERSION as ci-package-cmake
-FROM ${ASWF_PKG_ORG}/ci-package-cppunit:$ASWF_VFXPLATFORM_VERSION-$ASWF_CPPUNIT_VERSION as ci-package-cppunit
-FROM ${ASWF_PKG_ORG}/ci-package-glfw:$ASWF_VFXPLATFORM_VERSION-$ASWF_GLFW_VERSION as ci-package-glfw
-FROM ${ASWF_PKG_ORG}/ci-package-python:$ASWF_VFXPLATFORM_VERSION-$ASWF_PYTHON_VERSION as ci-package-python
-FROM ${ASWF_PKG_ORG}/ci-package-tbb:$ASWF_VFXPLATFORM_VERSION-$ASWF_TBB_VERSION as ci-package-tbb
-FROM ${ASWF_PKG_ORG}/ci-package-imath:$ASWF_VFXPLATFORM_VERSION-$ASWF_IMATH_VERSION as ci-package-imath
-FROM ${ASWF_PKG_ORG}/ci-package-openexr:$ASWF_VFXPLATFORM_VERSION-$ASWF_OPENEXR_VERSION as ci-package-openexr
-FROM ${ASWF_PKG_ORG}/ci-package-blosc:$ASWF_VFXPLATFORM_VERSION-$ASWF_BLOSC_VERSION as ci-package-blosc
 FROM ${ASWF_ORG}/ci-common:${CI_COMMON_VERSION}-clang${ASWF_CLANG_MAJOR_VERSION} as ci-openvdb
 
 
@@ -94,15 +85,15 @@ ENV ASWF_VFXPLATFORM_VERSION=$ASWF_VFXPLATFORM_VERSION
 ENV ASWF_PYTHON_MAJOR_MINOR_VERSION=$ASWF_PYTHON_MAJOR_MINOR_VERSION
 
 
-COPY --from=ci-package-boost /. /usr/local/
-COPY --from=ci-package-cmake /. /usr/local/
-COPY --from=ci-package-cppunit /. /usr/local/
-COPY --from=ci-package-glfw /. /usr/local/
-COPY --from=ci-package-python /. /usr/local/
-COPY --from=ci-package-tbb /. /usr/local/
-COPY --from=ci-package-imath /. /usr/local/
-COPY --from=ci-package-openexr /. /usr/local/
-COPY --from=ci-package-blosc /. /usr/local/
+RUN conan -boost /. /usr/local/
+RUN conan -cmake /. /usr/local/
+RUN conan -cppunit /. /usr/local/
+RUN conan -glfw /. /usr/local/
+RUN conan -python /. /usr/local/
+RUN conan -tbb /. /usr/local/
+RUN conan -imath /. /usr/local/
+RUN conan -openexr /. /usr/local/
+RUN conan -blosc /. /usr/local/
 COPY ci-openvdb/README.md ci-openvdb/image.yaml /usr/local/aswf/
 
 

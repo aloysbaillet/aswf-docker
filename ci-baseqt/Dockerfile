@@ -23,16 +23,6 @@ ARG ASWF_VFXPLATFORM_VERSION
 ARG ASWF_PYTHON_MAJOR_MINOR_VERSION
 
 
-FROM ${ASWF_PKG_ORG}/ci-package-boost:$ASWF_VFXPLATFORM_VERSION-$ASWF_BOOST_VERSION as ci-package-boost
-FROM ${ASWF_PKG_ORG}/ci-package-cmake:$ASWF_VFXPLATFORM_VERSION-$ASWF_CMAKE_VERSION as ci-package-cmake
-FROM ${ASWF_PKG_ORG}/ci-package-cppunit:$ASWF_VFXPLATFORM_VERSION-$ASWF_CPPUNIT_VERSION as ci-package-cppunit
-FROM ${ASWF_PKG_ORG}/ci-package-glew:$ASWF_VFXPLATFORM_VERSION-$ASWF_GLEW_VERSION as ci-package-glew
-FROM ${ASWF_PKG_ORG}/ci-package-glfw:$ASWF_VFXPLATFORM_VERSION-$ASWF_GLFW_VERSION as ci-package-glfw
-FROM ${ASWF_PKG_ORG}/ci-package-log4cplus:$ASWF_VFXPLATFORM_VERSION-$ASWF_LOG4CPLUS_VERSION as ci-package-log4cplus
-FROM ${ASWF_PKG_ORG}/ci-package-python:$ASWF_VFXPLATFORM_VERSION-$ASWF_PYTHON_VERSION as ci-package-python
-FROM ${ASWF_PKG_ORG}/ci-package-tbb:$ASWF_VFXPLATFORM_VERSION-$ASWF_TBB_VERSION as ci-package-tbb
-FROM ${ASWF_PKG_ORG}/ci-package-qt:$ASWF_VFXPLATFORM_VERSION-$ASWF_QT_VERSION as ci-package-qt
-FROM ${ASWF_PKG_ORG}/ci-package-pyside:$ASWF_VFXPLATFORM_VERSION-$ASWF_PYSIDE_VERSION as ci-package-pyside
 FROM ${ASWF_ORG}/ci-common:${CI_COMMON_VERSION}-clang${ASWF_CLANG_MAJOR_VERSION} as ci-baseqt
 
 
@@ -98,16 +88,16 @@ ENV ASWF_VFXPLATFORM_VERSION=$ASWF_VFXPLATFORM_VERSION
 ENV ASWF_PYTHON_MAJOR_MINOR_VERSION=$ASWF_PYTHON_MAJOR_MINOR_VERSION
 
 
-COPY --from=ci-package-boost /. /usr/local/
-COPY --from=ci-package-cmake /. /usr/local/
-COPY --from=ci-package-cppunit /. /usr/local/
-COPY --from=ci-package-glew /. /usr/local/
-COPY --from=ci-package-glfw /. /usr/local/
-COPY --from=ci-package-log4cplus /. /usr/local/
-COPY --from=ci-package-python /. /usr/local/
-COPY --from=ci-package-tbb /. /usr/local/
-COPY --from=ci-package-qt /. /usr/local/
-COPY --from=ci-package-pyside /. /usr/local/
+RUN conan -boost /. /usr/local/
+RUN conan -cmake /. /usr/local/
+RUN conan -cppunit /. /usr/local/
+RUN conan -glew /. /usr/local/
+RUN conan -glfw /. /usr/local/
+RUN conan -log4cplus /. /usr/local/
+RUN conan -python /. /usr/local/
+RUN conan -tbb /. /usr/local/
+RUN conan -qt /. /usr/local/
+RUN conan -pyside /. /usr/local/
 COPY ci-baseqt/README.md ci-baseqt/image.yaml /usr/local/aswf/
 
 

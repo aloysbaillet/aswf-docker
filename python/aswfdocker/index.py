@@ -31,7 +31,7 @@ class Index:
         }
         self._version_infos = {}
         for version, v in self._versions["versions"].items():
-            self._version_infos[version] = versioninfo.VersionInfo(
+            vi = versioninfo.VersionInfo(
                 version=version,
                 major_version=v.get("major_version"),
                 tags=v.get("tags", []),
@@ -40,6 +40,9 @@ class Index:
                 parent_versions=v.get("parent_versions", []),
                 use_major_version_as_tag=v.get("use_major_version_as_tag", False),
             )
+            vi.conan_profile = v.get("conan_profile")
+            self._version_infos[version] = vi
+
         for vi in self._version_infos.values():
             vi.all_package_versions = vi.package_versions.copy()
             for parent in vi.parent_versions:

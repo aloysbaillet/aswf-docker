@@ -26,6 +26,7 @@ pyyaml = "*"
 jinja2 = "*"
 requests = "*"
 importlib-resources = "*"
+conan = "*"
 
 [requires]
 python_version = "3.9"

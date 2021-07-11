@@ -1,0 +1,9 @@
+[requires]
+clang/7.1.0@
+ninja/1.10.1@
+
+[generators]
+cmake
+
+[imports]
+., * -> .

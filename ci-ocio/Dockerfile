@@ -27,20 +27,6 @@ ARG ASWF_VFXPLATFORM_VERSION
 ARG ASWF_PYTHON_MAJOR_MINOR_VERSION
 
 
-FROM ${ASWF_PKG_ORG}/ci-package-python:$ASWF_VFXPLATFORM_VERSION-$ASWF_PYTHON_VERSION as ci-package-python
-FROM ${ASWF_PKG_ORG}/ci-package-pybind11:$ASWF_VFXPLATFORM_VERSION-$ASWF_PYBIND11_VERSION as ci-package-pybind11
-FROM ${ASWF_PKG_ORG}/ci-package-tbb:$ASWF_VFXPLATFORM_VERSION-$ASWF_TBB_VERSION as ci-package-tbb
-FROM ${ASWF_PKG_ORG}/ci-package-boost:$ASWF_VFXPLATFORM_VERSION-$ASWF_BOOST_VERSION as ci-package-boost
-FROM ${ASWF_PKG_ORG}/ci-package-glew:$ASWF_VFXPLATFORM_VERSION-$ASWF_GLEW_VERSION as ci-package-glew
-FROM ${ASWF_PKG_ORG}/ci-package-glfw:$ASWF_VFXPLATFORM_VERSION-$ASWF_GLFW_VERSION as ci-package-glfw
-FROM ${ASWF_PKG_ORG}/ci-package-cmake:$ASWF_VFXPLATFORM_VERSION-$ASWF_CMAKE_VERSION as ci-package-cmake
-FROM ${ASWF_PKG_ORG}/ci-package-imath:$ASWF_VFXPLATFORM_VERSION-$ASWF_IMATH_VERSION as ci-package-imath
-FROM ${ASWF_PKG_ORG}/ci-package-openexr:$ASWF_VFXPLATFORM_VERSION-$ASWF_OPENEXR_VERSION as ci-package-openexr
-FROM ${ASWF_PKG_ORG}/ci-package-oiio:$ASWF_VFXPLATFORM_VERSION-$ASWF_OIIO_VERSION as ci-package-oiio
-FROM ${ASWF_PKG_ORG}/ci-package-blosc:$ASWF_VFXPLATFORM_VERSION-$ASWF_BLOSC_VERSION as ci-package-blosc
-FROM ${ASWF_PKG_ORG}/ci-package-partio:$ASWF_VFXPLATFORM_VERSION-$ASWF_PARTIO_VERSION as ci-package-partio
-FROM ${ASWF_PKG_ORG}/ci-package-openvdb:$ASWF_VFXPLATFORM_VERSION-$ASWF_OPENVDB_VERSION as ci-package-openvdb
-FROM ${ASWF_PKG_ORG}/ci-package-osl:$ASWF_VFXPLATFORM_VERSION-$ASWF_OSL_VERSION as ci-package-osl
 FROM ${ASWF_ORG}/ci-common:${CI_COMMON_VERSION}-clang${ASWF_CLANG_MAJOR_VERSION} as ci-ocio
 
 
@@ -119,20 +105,20 @@ ENV ASWF_VFXPLATFORM_VERSION=$ASWF_VFXPLATFORM_VERSION
 ENV ASWF_PYTHON_MAJOR_MINOR_VERSION=$ASWF_PYTHON_MAJOR_MINOR_VERSION
 
 
-COPY --from=ci-package-python /. /usr/local/
-COPY --from=ci-package-pybind11 /. /usr/local/
-COPY --from=ci-package-tbb /. /usr/local/
-COPY --from=ci-package-boost /. /usr/local/
-COPY --from=ci-package-glew /. /usr/local/
-COPY --from=ci-package-glfw /. /usr/local/
-COPY --from=ci-package-cmake /. /usr/local/
-COPY --from=ci-package-imath /. /usr/local/
-COPY --from=ci-package-openexr /. /usr/local/
-COPY --from=ci-package-oiio /. /usr/local/
-COPY --from=ci-package-blosc /. /usr/local/
-COPY --from=ci-package-partio /. /usr/local/
-COPY --from=ci-package-openvdb /. /usr/local/
-COPY --from=ci-package-osl /. /usr/local/
+RUN conan -python /. /usr/local/
+RUN conan -pybind11 /. /usr/local/
+RUN conan -tbb /. /usr/local/
+RUN conan -boost /. /usr/local/
+RUN conan -glew /. /usr/local/
+RUN conan -glfw /. /usr/local/
+RUN conan -cmake /. /usr/local/
+RUN conan -imath /. /usr/local/
+RUN conan -openexr /. /usr/local/
+RUN conan -oiio /. /usr/local/
+RUN conan -blosc /. /usr/local/
+RUN conan -partio /. /usr/local/
+RUN conan -openvdb /. /usr/local/
+RUN conan -osl /. /usr/local/
 COPY ci-ocio/README.md ci-ocio/image.yaml /usr/local/aswf/
 
 
