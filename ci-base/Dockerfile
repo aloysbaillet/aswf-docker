@@ -80,16 +80,23 @@ ENV ASWF_VFXPLATFORM_VERSION=$ASWF_VFXPLATFORM_VERSION
 ENV ASWF_PYTHON_MAJOR_MINOR_VERSION=$ASWF_PYTHON_MAJOR_MINOR_VERSION
 
 
-RUN conan -boost /. /usr/local/
-RUN conan -cmake /. /usr/local/
-RUN conan -cppunit /. /usr/local/
-RUN conan -glew /. /usr/local/
-RUN conan -glfw /. /usr/local/
-RUN conan -log4cplus /. /usr/local/
-RUN conan -python /. /usr/local/
-RUN conan -tbb /. /usr/local/
 COPY ci-base/README.md ci-base/image.yaml /usr/local/aswf/
 
 
 
 ENV PYTHONPATH=/usr/local/lib/python${ASWF_PYTHON_MAJOR_MINOR_VERSION}/site-packages:/usr/local/lib64/python${ASWF_PYTHON_MAJOR_MINOR_VERSION}/site-packages:/usr/local/lib/python:${PYTHONPATH}
+RUN cd /usr/local/ && \
+    echo $'[generators]\n\
+cmake\n\
+[imports]\n\
+., * -> .\n\
+[requires]\n' >> /usr/local/conanfile.txt && \
+echo "boost/${ASWF_BOOST_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "cmake/${ASWF_CMAKE_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "cppunit/${ASWF_CPPUNIT_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "glew/${ASWF_GLEW_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "glfw/${ASWF_GLFW_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "log4cplus/${ASWF_LOG4CPLUS_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "python/${ASWF_PYTHON_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "tbb/${ASWF_TBB_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+conan install .

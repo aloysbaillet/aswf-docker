@@ -49,6 +49,8 @@ class Index:
                 vi.all_package_versions.update(
                     self._version_infos[parent].package_versions
                 )
+                if not vi.conan_profile:
+                    vi.conan_profile = self._version_infos[parent].conan_profile
 
     def _get_key(self, image_type: constants.ImageType):
         if image_type == constants.ImageType.PACKAGE:

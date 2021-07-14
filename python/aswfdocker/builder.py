@@ -38,6 +38,10 @@ class Builder:
             version_info = self.index.version_info(major_version)
             if self.group_info.type == constants.ImageType.PACKAGE:
                 if version in versions_to_bake:
+                    # Only one version per image needed
+                    continue
+                if int(major_version) > 1000:
+                    # Only bake images for ci_common!
                     continue
                 versions_to_bake.add(version)
                 tags = list(
@@ -69,7 +73,7 @@ class Builder:
                     "org.opencontainers.image.revision": self.build_info.vcs_ref,
                 },
                 "tags": tags,
-                "output": ["type=registry,push=true" if self.push else "type=docker"],
+                "output": ["type=registry,push=true" if self.push and self.group_info.type == constants.ImageType.IMAGE else "type=docker"],
             }
             target_dict["args"].update(version_info.all_package_versions)
             if self.group_info.type == constants.ImageType.PACKAGE:
@@ -81,6 +85,8 @@ class Builder:
 
     def make_bake_jsonfile(self) -> str:
         d = self.make_bake_dict()
+        if not d["group"]["default"]["targets"]:
+            return None
         groups = "-".join(self.group_info.names)
         versions = "-".join(self.group_info.versions)
         path = os.path.join(
@@ -105,10 +111,10 @@ class Builder:
 
     def build(self, dry_run: bool = False, progress: str = "") -> None:
         path = self.make_bake_jsonfile()
-        logger.debug("Repo root: %s", self.build_info.repo_root)
-        self._run(
-            f"docker buildx bake -f {path} --progress {progress}", dry_run=dry_run
-        )
+        if path:
+            self._run(
+                f"docker buildx bake -f {path} --progress {progress}", dry_run=dry_run
+            )
         if self.group_info.type != constants.ImageType.PACKAGE:
             return
         for image, version in self.group_info.iter_images_versions(get_image=True):
@@ -136,7 +142,7 @@ class Builder:
             for name, value in vols.items():
                 base_cmd.append("-v")
                 base_cmd.append(f"{name}:{value}")
-            tag = f"{constants.DOCKER_REGISTRY}/{self.build_info.docker_org}/ci-centos7-gl-conan:{version}"
+            tag = f"{constants.DOCKER_REGISTRY}/{self.build_info.docker_org}/ci-centos7-gl-conan:{version_info.ci_common_version}"
             base_cmd.append(tag)
             self._run_in_docker(
                 base_cmd,
@@ -148,14 +154,16 @@ class Builder:
                 ],
                 dry_run,
             )
-            conan_version = f"{image}/{version_info.package_versions.get('ASWF_' + image.upper() + '_VERSION')}@"
+            full_version = version_info.package_versions.get('ASWF_' + image.upper() + '_VERSION')
+            conan_version = f"{image}/{full_version}@{self.build_info.docker_org}/{version_info.conan_profile}"
             self._run_in_docker(
                 base_cmd,
                 ["conan", "create", f"/tmp/conan/recipes/{image}", conan_version],
                 dry_run,
             )
-            self._run_in_docker(
-                base_cmd,
-                ["conan", "upload", "--all", "-r", "aswftesting", conan_version],
-                dry_run,
-            )
+            if self.push:
+                self._run_in_docker(
+                    base_cmd,
+                    ["conan", "upload", "--all", "-r", "aswftesting", conan_version],
+                    dry_run,
+                )

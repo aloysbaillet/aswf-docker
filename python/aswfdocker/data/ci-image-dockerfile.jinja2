@@ -75,10 +75,6 @@ ENV {{ arg }}=${{ arg }}
 {% endfor -%}
 {% endfor %}
 
-{% for package in packages -%}
-RUN conan -{{ package }} /. /usr/local/
-{% endfor -%}
-
 COPY ci-{{name}}/README.md ci-{{name}}/image.yaml /usr/local/aswf/
 
 {{ docker_commands }}
@@ -86,3 +82,14 @@ COPY ci-{{name}}/README.md ci-{{name}}/image.yaml /usr/local/aswf/
 {% for package in packages + implicit_packages -%}
 {{ index.package_data(package).get("docker_commands", "") -}}
 {% endfor -%}
+
+RUN cd /usr/local/ && \
+    echo $'[generators]\n\
+cmake\n\
+[imports]\n\
+., * -> .\n\
+[requires]\n' >> /usr/local/conanfile.txt && \
+{% for package in packages -%}
+    echo "{{package}}/${ASWF_{{package.upper()}}_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+{% endfor -%}
+    conan install .

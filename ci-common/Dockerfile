@@ -68,8 +68,6 @@ ENV ASWF_CONAN_VERSION=$ASWF_CONAN_VERSION
 ENV ASWF_CONAN_PYTHON_VERSION=$ASWF_CONAN_PYTHON_VERSION
 
 
-RUN conan -clang /. /usr/local/
-RUN conan -ninja /. /usr/local/
 COPY ci-common/README.md ci-common/image.yaml /usr/local/aswf/
 
 USER root
@@ -111,4 +109,16 @@ COPY ../scripts/common/install_conan.sh /tmp/
 RUN --mount=type=cache,sharing=private,target=/tmp/downloads \
     /tmp/install_conan.sh
 
+COPY ../packages/conan/settings /opt/conan_home/.conan
+ENV CONAN_USER_HOME=/opt/conan_home
 
+
+RUN cd /usr/local/ && \
+    echo $'[generators]\n\
+cmake\n\
+[imports]\n\
+., * -> .\n\
+[requires]\n' >> /usr/local/conanfile.txt && \
+echo "clang/${ASWF_CLANG_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "ninja/${ASWF_NINJA_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+conan install .

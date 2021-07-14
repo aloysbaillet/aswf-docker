@@ -105,22 +105,29 @@ ENV ASWF_VFXPLATFORM_VERSION=$ASWF_VFXPLATFORM_VERSION
 ENV ASWF_PYTHON_MAJOR_MINOR_VERSION=$ASWF_PYTHON_MAJOR_MINOR_VERSION
 
 
-RUN conan -python /. /usr/local/
-RUN conan -pybind11 /. /usr/local/
-RUN conan -tbb /. /usr/local/
-RUN conan -boost /. /usr/local/
-RUN conan -glew /. /usr/local/
-RUN conan -glfw /. /usr/local/
-RUN conan -cmake /. /usr/local/
-RUN conan -imath /. /usr/local/
-RUN conan -openexr /. /usr/local/
-RUN conan -oiio /. /usr/local/
-RUN conan -blosc /. /usr/local/
-RUN conan -partio /. /usr/local/
-RUN conan -openvdb /. /usr/local/
-RUN conan -osl /. /usr/local/
 COPY ci-ocio/README.md ci-ocio/image.yaml /usr/local/aswf/
 
 
 
 ENV PYTHONPATH=/usr/local/lib/python${ASWF_PYTHON_MAJOR_MINOR_VERSION}/site-packages:/usr/local/lib64/python${ASWF_PYTHON_MAJOR_MINOR_VERSION}/site-packages:/usr/local/lib/python:${PYTHONPATH}
+RUN cd /usr/local/ && \
+    echo $'[generators]\n\
+cmake\n\
+[imports]\n\
+., * -> .\n\
+[requires]\n' >> /usr/local/conanfile.txt && \
+echo "python/${ASWF_PYTHON_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "pybind11/${ASWF_PYBIND11_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "tbb/${ASWF_TBB_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "boost/${ASWF_BOOST_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "glew/${ASWF_GLEW_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "glfw/${ASWF_GLFW_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "cmake/${ASWF_CMAKE_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "imath/${ASWF_IMATH_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "openexr/${ASWF_OPENEXR_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "oiio/${ASWF_OIIO_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "blosc/${ASWF_BLOSC_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "partio/${ASWF_PARTIO_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "openvdb/${ASWF_OPENVDB_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "osl/${ASWF_OSL_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+conan install .
