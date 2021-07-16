@@ -73,7 +73,11 @@ class Builder:
                     "org.opencontainers.image.revision": self.build_info.vcs_ref,
                 },
                 "tags": tags,
-                "output": ["type=registry,push=true" if self.push and self.group_info.type == constants.ImageType.IMAGE else "type=docker"],
+                "output": [
+                    "type=registry,push=true"
+                    if self.push and self.group_info.type == constants.ImageType.IMAGE
+                    else "type=docker"
+                ],
             }
             target_dict["args"].update(version_info.all_package_versions)
             if self.group_info.type == constants.ImageType.PACKAGE:
@@ -154,7 +158,9 @@ class Builder:
                 ],
                 dry_run,
             )
-            full_version = version_info.package_versions.get('ASWF_' + image.upper() + '_VERSION')
+            full_version = version_info.package_versions.get(
+                "ASWF_" + image.upper() + "_VERSION"
+            )
             conan_version = f"{image}/{full_version}@{self.build_info.docker_org}/{version_info.conan_profile}"
             self._run_in_docker(
                 base_cmd,
