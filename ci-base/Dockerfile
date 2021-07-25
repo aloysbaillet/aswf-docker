@@ -25,7 +25,9 @@ FROM ${ASWF_ORG}/ci-common:${CI_COMMON_VERSION}-clang${ASWF_CLANG_MAJOR_VERSION}
 
 
 ARG ASWF_ORG
+ARG ASWF_PKG_ORG
 ARG ASWF_VERSION
+ARG CI_COMMON_VERSION
 
 ARG ASWF_BOOST_VERSION
 ARG ASWF_CMAKE_VERSION
@@ -99,4 +101,5 @@ echo "glfw/${ASWF_GLFW_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >
 echo "log4cplus/${ASWF_LOG4CPLUS_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
 echo "python/${ASWF_PYTHON_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
 echo "tbb/${ASWF_TBB_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
-conan install .
+conan install . && \
+    rm -rf /opt/conan_home/conan_data/*

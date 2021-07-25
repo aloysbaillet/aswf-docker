@@ -15,7 +15,7 @@ class ClangConan(ConanFile):
     homepage = "https://github.com/llvm/llvm-project/tree/master/llvm"
     url = "https://github.com/conan-io/conan-center-index"
 
-    settings = ("os", "arch", "compiler", "build_type", "devtoolset")
+    settings = "os", "arch", "compiler", "build_type", "devtoolset", "ci_common"
     options = {
         "components": "ANY",
         "targets": "ANY",

@@ -29,7 +29,9 @@ FROM ${ASWF_ORG}/ci-common:${CI_COMMON_VERSION}-clang${ASWF_CLANG_MAJOR_VERSION}
 
 
 ARG ASWF_ORG
+ARG ASWF_PKG_ORG
 ARG ASWF_VERSION
+ARG CI_COMMON_VERSION
 
 ARG ASWF_BOOST_VERSION
 ARG ASWF_CMAKE_VERSION
@@ -120,4 +122,5 @@ echo "partio/${ASWF_PARTIO_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION
 echo "tbb/${ASWF_TBB_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
 echo "blosc/${ASWF_BLOSC_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
 echo "openvdb/${ASWF_OPENVDB_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
-conan install .
+conan install . && \
+    rm -rf /opt/conan_home/conan_data/*

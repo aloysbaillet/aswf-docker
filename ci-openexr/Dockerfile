@@ -20,7 +20,9 @@ FROM ${ASWF_ORG}/ci-common:${CI_COMMON_VERSION}-clang${ASWF_CLANG_MAJOR_VERSION}
 
 
 ARG ASWF_ORG
+ARG ASWF_PKG_ORG
 ARG ASWF_VERSION
+ARG CI_COMMON_VERSION
 
 ARG ASWF_PYTHON_VERSION
 ARG ASWF_BOOST_VERSION
@@ -75,4 +77,5 @@ cmake\n\
 echo "python/${ASWF_PYTHON_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
 echo "boost/${ASWF_BOOST_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
 echo "cmake/${ASWF_CMAKE_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
-conan install .
+conan install . && \
+    rm -rf /opt/conan_home/conan_data/*

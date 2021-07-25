@@ -22,7 +22,9 @@ FROM nvidia/cudagl:${ASWF_CUDA_VERSION}-devel-centos7 as ci-common
 
 
 ARG ASWF_ORG
+ARG ASWF_PKG_ORG
 ARG ASWF_VERSION
+ARG CI_COMMON_VERSION
 
 ARG ASWF_CLANG_VERSION
 ARG ASWF_NINJA_VERSION
@@ -121,4 +123,5 @@ cmake\n\
 [requires]\n' >> /usr/local/conanfile.txt && \
 echo "clang/${ASWF_CLANG_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
 echo "ninja/${ASWF_NINJA_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
-conan install .
+conan install . && \
+    rm -rf /opt/conan_home/conan_data/*

@@ -1,4 +1,4 @@
-settings/data
+conan_data/
 settings/.conan.db
 settings/cacert.pem
 settings/artifacts.properties

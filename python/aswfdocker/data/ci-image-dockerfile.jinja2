@@ -26,7 +26,9 @@ FROM {{ docker_from }} as ci-{{ name }}
 
 
 ARG ASWF_ORG
+ARG ASWF_PKG_ORG
 ARG ASWF_VERSION
+ARG CI_COMMON_VERSION
 
 {% for arg in docker_args -%}
 ARG {{ arg }}
@@ -92,4 +94,5 @@ cmake\n\
 {% for package in packages -%}
     echo "{{package}}/${ASWF_{{package.upper()}}_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
 {% endfor -%}
-    conan install .
+    conan install . && \
+    rm -rf /opt/conan_home/conan_data/*

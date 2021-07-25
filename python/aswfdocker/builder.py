@@ -40,7 +40,7 @@ class Builder:
                 if version in versions_to_bake:
                     # Only one version per image needed
                     continue
-                if int(major_version) > 1000:
+                if version_info.ci_common_version != major_version:
                     # Only bake images for ci_common!
                     continue
                 versions_to_bake.add(version)
@@ -133,13 +133,16 @@ class Builder:
                 envs["CONAN_PASSWORD"] = os.environ["CONAN_PASSWORD"]
             if "ARTIFACTORY_TOKEN" in os.environ:
                 envs["CONAN_PASSWORD"] = os.environ["ARTIFACTORY_TOKEN"]
+            for name, value in version_info.all_package_versions.items():
+                envs[name] = value
             conan_base = os.path.join(utils.get_git_top_level(), "packages", "conan")
             vols = {
                 os.path.join(conan_base, "settings"): "/tmp/conan/.conan",
+                os.path.join(conan_base, "conan_data"): "/tmp/conan/conan_data",
                 os.path.join(conan_base, "recipes"): "/tmp/conan/recipes",
                 os.path.join(conan_base, "ccache"): "/tmp/ccache",
             }
-            base_cmd = ["docker", "run", "-t"]
+            base_cmd = ["docker", "run", "-t", "--rm"]
             for name, value in envs.items():
                 base_cmd.append("-e")
                 base_cmd.append(f"{name}={value}")
@@ -164,7 +167,7 @@ class Builder:
             conan_version = f"{image}/{full_version}@{self.build_info.docker_org}/{version_info.conan_profile}"
             self._run_in_docker(
                 base_cmd,
-                ["conan", "create", f"/tmp/conan/recipes/{image}", conan_version],
+                ["conan", "create", f"/tmp/conan/recipes/{image}", conan_version, "--keep-source"],
                 dry_run,
             )
             if self.push:

@@ -26,7 +26,9 @@ FROM ${ASWF_ORG}/ci-common:${CI_COMMON_VERSION}-clang${ASWF_CLANG_MAJOR_VERSION}
 
 
 ARG ASWF_ORG
+ARG ASWF_PKG_ORG
 ARG ASWF_VERSION
+ARG CI_COMMON_VERSION
 
 ARG ASWF_BOOST_VERSION
 ARG ASWF_CMAKE_VERSION
@@ -105,4 +107,5 @@ echo "tbb/${ASWF_TBB_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> 
 echo "imath/${ASWF_IMATH_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
 echo "openexr/${ASWF_OPENEXR_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
 echo "blosc/${ASWF_BLOSC_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
-conan install .
+conan install . && \
+    rm -rf /opt/conan_home/conan_data/*

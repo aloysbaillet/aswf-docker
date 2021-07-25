@@ -41,7 +41,9 @@ FROM ${ASWF_ORG}/ci-common:${CI_COMMON_VERSION}-clang${ASWF_CLANG_MAJOR_VERSION}
 
 
 ARG ASWF_ORG
+ARG ASWF_PKG_ORG
 ARG ASWF_VERSION
+ARG CI_COMMON_VERSION
 
 ARG ASWF_PYTHON_VERSION
 ARG ASWF_TBB_VERSION
@@ -178,4 +180,5 @@ echo "usd/${ASWF_USD_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> 
 echo "partio/${ASWF_PARTIO_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
 echo "osl/${ASWF_OSL_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
 echo "otio/${ASWF_OTIO_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
-conan install .
+conan install . && \
+    rm -rf /opt/conan_home/conan_data/*

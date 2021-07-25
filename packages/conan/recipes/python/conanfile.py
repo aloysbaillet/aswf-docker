@@ -10,31 +10,53 @@ class PythonConan(ConanFile):
     license = " LGPL-2.1-or-later"
     homepage = "https://python.org/"
     url = "https://github.com/conan-io/conan-center-index"
-    settings = "os", "arch", "compiler", "build_type"
-    options = {
-    }
-    default_options = {
-    }
+    settings = (
+        "os",
+        "arch",
+        "compiler",
+        "build_type",
+        "ci_common",
+        "vfx_platform",
+        "python",
+    )
+    options = {}
+    default_options = {}
     generators = "pkg_config"
 
     _autotools = None
+
+    def configure(self):
+        python_version = tools.Version(self.version)
+        self.major_minor = f"{python_version.major}.{python_version.minor}"
 
     @property
     def _source_subfolder(self):
         return "source_subfolder"
 
     def source(self):
-        tools.get(f"https://www.python.org/ftp/python/{self.version}/Python-{self.version}.tgz")
+        tools.get(
+            f"https://www.python.org/ftp/python/{self.version}/Python-{self.version}.tgz"
+        )
         os.rename(f"Python-{self.version}", self._source_subfolder)
+
+    def export_sources(self):
+        self.copy("run-with-system-python")
+        self.copy("yum")
 
     @contextmanager
     def _build_context(self):
         if self.settings.compiler == "Visual Studio":
             with tools.vcvars(self.settings):
                 env = {
-                    "AR": "{} lib".format(tools.unix_path(self.deps_user_info["automake"].ar_lib)),
-                    "CC": "{} cl -nologo".format(tools.unix_path(self.deps_user_info["automake"].compile)),
-                    "CXX": "{} cl -nologo".format(tools.unix_path(self.deps_user_info["automake"].compile)),
+                    "AR": "{} lib".format(
+                        tools.unix_path(self.deps_user_info["automake"].ar_lib)
+                    ),
+                    "CC": "{} cl -nologo".format(
+                        tools.unix_path(self.deps_user_info["automake"].compile)
+                    ),
+                    "CXX": "{} cl -nologo".format(
+                        tools.unix_path(self.deps_user_info["automake"].compile)
+                    ),
                     "NM": "dumpbin -symbols",
                     "OBJDUMP": ":",
                     "RANLIB": ":",
@@ -48,7 +70,9 @@ class PythonConan(ConanFile):
     def _configure_autotools(self):
         if self._autotools:
             return self._autotools
-        self._autotools = AutoToolsBuildEnvironment(self, win_bash=tools.os_info.is_windows)
+        self._autotools = AutoToolsBuildEnvironment(
+            self, win_bash=tools.os_info.is_windows
+        )
         if self.settings.os == "Windows":
             self._autotools.defines.append("PYTHON_BUILD_DLL")
         if self.settings.compiler == "Visual Studio":
@@ -74,18 +98,41 @@ class PythonConan(ConanFile):
 
     def package(self):
         self.copy("COPYING", src=self._source_subfolder, dst="licenses")
+
+        self.copy("yum", dst="bin")
+        self.copy("run-with-system-python", dst="bin")
+
         with self._build_context():
             autotools = self._configure_autotools()
             autotools.install()
 
-        if self.settings.compiler == "Visual Studio":
-            os.rename(os.path.join(self.package_folder, "lib", "python.dll.lib"),
-                      os.path.join(self.package_folder, "lib", "python.lib"))
+        python_version = tools.Version(self.version)
+        if python_version.major == "3":
+            tools.download("https://bootstrap.pypa.io/get-pip.py", "get-pip.py")
+        else:
+            tools.download("https://bootstrap.pypa.io/pip/2.7/get-pip.py", "get-pip.py")
 
-        tools.rmdir(os.path.join(self.package_folder, "lib", "pkgconfig"))
+        py_exe = os.path.join(self.package_folder, "bin", f"python{self.major_minor}")
+        with tools.environment_append(
+            {
+                "PATH": os.path.join(self.package_folder, "bin"),
+                "LD_LIBRARY_PATH": os.path.join(self.package_folder, "lib")
+            }
+        ):
+            self.run(f"{py_exe} get-pip.py")
+            self.run(
+                f"{py_exe} -m pip install nose coverage docutils epydoc numpy=={os.environ['ASWF_NUMPY_VERSION']}"
+            )
 
     def package_info(self):
-        self.cpp_info.libs = ["python"]
-        if self.settings.os == "Windows":
-            self.cpp_info.defines.append("PYTHON_DLL")
+        self.cpp_info.names["cmake"] = "PythonInterp"
+        self.cpp_info.names["cmake_find_package"] = "PythonInterp"
+        self.cpp_info.names["cmake_find_package_multi"] = "PythonInterp"
         self.cpp_info.filenames["pkg_config"] = "python"
+
+        self.cpp_info.components["PythonLibs"].includedirs = [
+            f"include/python{self.major_minor}"
+        ]
+        self.cpp_info.components["PythonLibs"].libs = [f"python{self.major_minor}"]
+        if self.settings.os == "Windows":
+            self.cpp_info.components["PythonLibs"].defines.append("PYTHON_DLL")
