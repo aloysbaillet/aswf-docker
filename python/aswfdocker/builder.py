@@ -42,7 +42,8 @@ class Builder:
                     continue
                 if version_info.ci_common_version != major_version:
                     # Only bake images for ci_common!
-                    continue
+                    version = version_info.ci_common_version
+                    major_version = utils.get_major_version(version)
                 versions_to_bake.add(version)
                 tags = list(
                     map(
@@ -54,7 +55,7 @@ class Builder:
                 group = self.index.get_group_from_image(
                     self.group_info.type, image_base
                 )
-                docker_file = f"packages/{group}/Dockerfile"
+                docker_file = f"packages/common/Dockerfile"
             else:
                 tags = version_info.get_tags(version, self.build_info.docker_org, image)
                 docker_file = f"{image}/Dockerfile"
@@ -66,7 +67,6 @@ class Builder:
                     "ASWF_PKG_ORG": self.build_info.package_org,
                     "ASWF_VERSION": version,
                     "CI_COMMON_VERSION": version_info.ci_common_version,
-                    "ASWF_VFXPLATFORM_VERSION": version_info.major_version,
                 },
                 "labels": {
                     "org.opencontainers.image.created": self.build_info.build_date,
