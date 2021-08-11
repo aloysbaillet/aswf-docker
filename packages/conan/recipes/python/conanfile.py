@@ -125,11 +125,12 @@ class PythonConan(ConanFile):
             )
 
     def package_info(self):
-        self.cpp_info.names["cmake"] = "PythonInterp"
-        self.cpp_info.names["cmake_find_package"] = "PythonInterp"
-        self.cpp_info.names["cmake_find_package_multi"] = "PythonInterp"
         self.cpp_info.filenames["pkg_config"] = "python"
+        self.user_info.python_interp = f"python{self.major_minor}"
+        
+        self.cpp_info.components["PythonInterp"].bindirs = ["bin"]
 
+        self.cpp_info.components["PythonLibs"].requires = ["PythonInterp"]
         self.cpp_info.components["PythonLibs"].includedirs = [
             f"include/python{self.major_minor}"
         ]

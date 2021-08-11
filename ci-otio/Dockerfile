@@ -7,6 +7,7 @@ ARG ASWF_ORG
 ARG ASWF_PKG_ORG
 ARG CI_COMMON_VERSION
 ARG ASWF_CLANG_MAJOR_VERSION
+ARG ASWF_CONAN_CHANNEL
 
 ARG ASWF_PYTHON_VERSION
 ARG ASWF_CMAKE_VERSION
@@ -24,6 +25,7 @@ ARG ASWF_ORG
 ARG ASWF_PKG_ORG
 ARG ASWF_VERSION
 ARG CI_COMMON_VERSION
+ARG ASWF_CONAN_CHANNEL
 
 ARG ASWF_PYTHON_VERSION
 ARG ASWF_CMAKE_VERSION
@@ -79,9 +81,9 @@ cmake\n\
 [imports]\n\
 ., * -> .\n\
 [requires]\n' >> /usr/local/conanfile.txt && \
-echo "python/${ASWF_PYTHON_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
-echo "cmake/${ASWF_CMAKE_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
-echo "qt/${ASWF_QT_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
-echo "pyside/${ASWF_PYSIDE_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+echo "python/${ASWF_PYTHON_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+echo "cmake/${ASWF_CMAKE_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+echo "qt/${ASWF_QT_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+echo "pyside/${ASWF_PYSIDE_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
 conan install . && \
     rm -rf /opt/conan_home/conan_data/*

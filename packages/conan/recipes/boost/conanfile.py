@@ -70,7 +70,7 @@ class BoostConan(ConanFile):
     def requirements(self):
         if self._with_component("python"):
             self.requires(
-                f"python/{os.environ['ASWF_PYTHON_VERSION']}@aswftesting/vfx2019"
+                f"python/{os.environ['ASWF_PYTHON_VERSION']}@{self.user}/{self.channel}"
             )
 
     @property

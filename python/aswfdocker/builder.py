@@ -55,10 +55,15 @@ class Builder:
                 group = self.index.get_group_from_image(
                     self.group_info.type, image_base
                 )
-                docker_file = f"packages/common/Dockerfile"
+                docker_file = "packages/common/Dockerfile"
             else:
                 tags = version_info.get_tags(version, self.build_info.docker_org, image)
                 docker_file = f"{image}/Dockerfile"
+
+            if version_info.ci_common_version == major_version:
+                channel = f"ci_common{major_version}"
+            else:
+                channel = f"vfx{major_version}"
             target_dict = {
                 "context": ".",
                 "dockerfile": docker_file,
@@ -67,6 +72,7 @@ class Builder:
                     "ASWF_PKG_ORG": self.build_info.package_org,
                     "ASWF_VERSION": version,
                     "CI_COMMON_VERSION": version_info.ci_common_version,
+                    "ASWF_CONAN_CHANNEL": channel,
                 },
                 "labels": {
                     "org.opencontainers.image.created": self.build_info.build_date,

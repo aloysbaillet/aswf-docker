@@ -7,6 +7,7 @@ ARG ASWF_ORG
 ARG ASWF_PKG_ORG
 ARG CI_COMMON_VERSION
 ARG ASWF_CLANG_MAJOR_VERSION
+ARG ASWF_CONAN_CHANNEL
 
 {% for arg in docker_args -%}
 ARG {{ arg }}
@@ -29,6 +30,7 @@ ARG ASWF_ORG
 ARG ASWF_PKG_ORG
 ARG ASWF_VERSION
 ARG CI_COMMON_VERSION
+ARG ASWF_CONAN_CHANNEL
 
 {% for arg in docker_args -%}
 ARG {{ arg }}
@@ -92,7 +94,7 @@ cmake\n\
 ., * -> .\n\
 [requires]\n' >> /usr/local/conanfile.txt && \
 {% for package in packages -%}
-    echo "{{package}}/${ASWF_{{package.upper()}}_VERSION}@${ASWF_PKG_ORG}/ci_common${CI_COMMON_VERSION}" >> /usr/local/conanfile.txt && \
+    echo "{{package}}/${ASWF_{{package.upper()}}_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
 {% endfor -%}
     conan install . && \
     rm -rf /opt/conan_home/conan_data/*
