@@ -130,7 +130,11 @@ class Builder:
         for image, version in self.group_info.iter_images_versions(get_image=True):
             major_version = utils.get_major_version(version)
             version_info = self.index.version_info(major_version)
-            envs = {"CONAN_USER_HOME": "/tmp/conan", "CCACHE_DIR": "/tmp/ccache"}
+            envs = {
+                "CONAN_USER_HOME": "/tmp/c",
+                "CCACHE_DIR": "/tmp/ccache",
+                "CONAN_USER_DATA_FOLDER": "/tmp/c/d",
+            }
             if "CONAN_LOGIN_USERNAME" in os.environ:
                 envs["CONAN_LOGIN_USERNAME"] = os.environ["CONAN_PASSWORD"]
             if "ARTIFACTORY_USER" in os.environ:
@@ -143,9 +147,9 @@ class Builder:
                 envs[name] = value
             conan_base = os.path.join(utils.get_git_top_level(), "packages", "conan")
             vols = {
-                os.path.join(conan_base, "settings"): "/tmp/conan/.conan",
-                os.path.join(conan_base, "conan_data"): "/tmp/conan/conan_data",
-                os.path.join(conan_base, "recipes"): "/tmp/conan/recipes",
+                os.path.join(conan_base, "settings"): "/tmp/c/.conan",
+                os.path.join(conan_base, "data"): "/tmp/c/d",
+                os.path.join(conan_base, "recipes"): "/tmp/c/recipes",
                 os.path.join(conan_base, "ccache"): "/tmp/ccache",
             }
             base_cmd = ["docker", "run", "-t", "--rm"]
@@ -173,7 +177,14 @@ class Builder:
             conan_version = f"{image}/{full_version}@{self.build_info.docker_org}/{version_info.conan_profile}"
             self._run_in_docker(
                 base_cmd,
-                ["conan", "create", f"/tmp/conan/recipes/{image}", conan_version, "--keep-source"],
+                [
+                    "conan",
+                    "create",
+                    f"/tmp/c/recipes/{image}",
+                    conan_version,
+                    "--keep-source",
+                    "--keep-build",
+                ],
                 dry_run,
             )
             if self.push:

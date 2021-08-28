@@ -110,19 +110,23 @@ class BoostConan(ConanFile):
                 jam = [
                     "using python",
                     major_minor,
-                    f"{self.deps_cpp_info['python'].bin_paths[0]}/python{major_minor}",
+                    f"{self.deps_cpp_info['python'].bin_paths[0]}/{self.deps_user_info['python'].python_interp}",
                     self.deps_cpp_info["python"].include_paths[0],
                     self.deps_cpp_info["python"].lib_paths[0],
                 ]
-                f.write(" : ".join(jam) + " ;")
+                f.write(" : ".join(jam) + " ;\n")
+                print("!!! JAM=" + " : ".join(jam) + " ;\n")
 
             self.run(
                 f"sh bootstrap.sh --with-python=bin/python{major_minor} --with-python-version={major_minor}",
                 cwd=self._source_subfolder,
+                run_environment=True,
             )
             build_args.append(f"--user-config={py_jam}")
         else:
-            self.run("sh bootstrap.sh", cwd=self._source_subfolder, run_environment=True)
+            self.run(
+                "sh bootstrap.sh", cwd=self._source_subfolder, run_environment=True
+            )
         if not self.version.startswith("1.61"):
             build_args.append("cxxstd=14")
 
@@ -209,12 +213,16 @@ class BoostConan(ConanFile):
         if self._with_component("program_options"):
             self.cpp_info.components["program_options"].libs = ["boost_program_options"]
         if self._with_component("python"):
-            self.cpp_info.components["python"].libs = ["boost_python"]
-            self.cpp_info.components["python"].requires.append("python::PythonLibs")
             python_version = tools.Version(self.dependencies["python"].ref.version)
             major_minor = f"{python_version.major}{python_version.minor}"
+            if python_version >= "3":
+                suffix = major_minor
+            else:
+                suffix = ""
+            self.cpp_info.components["python"].libs = [f"boost_python{suffix}"]
+            self.cpp_info.components["python"].requires.append("python::PythonLibs")
             self.cpp_info.components[f"python{major_minor}"].requires.append("python")
-            self.cpp_info.components["numpy"].libs = ["boost_numpy"]
+            self.cpp_info.components["numpy"].libs = [f"boost_numpy{suffix}"]
             self.cpp_info.components["numpy"].requires.append("python")
             self.cpp_info.components[f"numpy{major_minor}"].requires.append("numpy")
         if self._with_component("random"):
@@ -249,7 +257,9 @@ class BoostConan(ConanFile):
             if self.settings.os in ("Linux", "FreeBSD"):
                 self.cpp_info.components["stacktrace_basic"].system_libs.append("dl")
                 self.cpp_info.components["stacktrace_noop"].system_libs.append("dl")
-                self.cpp_info.components["stacktrace_addr2line"].system_libs.append("dl")
+                self.cpp_info.components["stacktrace_addr2line"].system_libs.append(
+                    "dl"
+                )
         if self._with_component("system"):
             self.cpp_info.components["system"].libs = ["boost_system"]
             self.cpp_info.components["system"].requires.append("_libboost")

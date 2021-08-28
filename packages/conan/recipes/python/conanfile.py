@@ -1,3 +1,4 @@
+from platform import python_version
 from conans import AutoToolsBuildEnvironment, ConanFile, tools
 from contextlib import contextmanager
 import os
@@ -131,9 +132,14 @@ class PythonConan(ConanFile):
         self.cpp_info.components["PythonInterp"].bindirs = ["bin"]
 
         self.cpp_info.components["PythonLibs"].requires = ["PythonInterp"]
+        python_version = tools.Version(self.version)
+        if python_version > "3.6" and python_version < 3.9:
+            suffix = "m"
+        else:
+            suffix = ""
         self.cpp_info.components["PythonLibs"].includedirs = [
-            f"include/python{self.major_minor}"
+            f"include/python{self.major_minor}{suffix}"
         ]
-        self.cpp_info.components["PythonLibs"].libs = [f"python{self.major_minor}"]
+        self.cpp_info.components["PythonLibs"].libs = [f"python{self.major_minor}{suffix}"]
         if self.settings.os == "Windows":
             self.cpp_info.components["PythonLibs"].defines.append("PYTHON_DLL")

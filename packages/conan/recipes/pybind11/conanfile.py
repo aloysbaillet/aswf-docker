@@ -42,8 +42,9 @@ class PyBind11Conan(ConanFile):
         return self._cmake
 
     def build(self):
-        cmake = self._configure_cmake()
-        cmake.build()
+        with tools.environment_append(tools.RunEnvironment(self).vars):
+            cmake = self._configure_cmake()
+            cmake.build()
 
     def package(self):
         self.copy("LICENSE", src=self._source_subfolder, dst="licenses")
@@ -90,9 +91,9 @@ class PyBind11Conan(ConanFile):
         self.info.header_only()
 
     def package_info(self):
-        self.cpp_info.requires.append("python::PythonLibs")
         cmake_base_path = os.path.join("lib", "cmake", "pybind11")
         if tools.Version(self.version) >= "2.6.0":
+            self.cpp_info.components["main"].requires.append("python::PythonLibs")
             self.cpp_info.components["main"].names["cmake_find_package"] = "pybind11"
             self.cpp_info.components["main"].builddirs = [cmake_base_path]
             for generator in ["cmake_find_package", "cmake_find_package_multi"]:
@@ -112,6 +113,7 @@ class PyBind11Conan(ConanFile):
             self.cpp_info.components["opt_size"].requires = ["main"]
             self.cpp_info.components["python2_no_register"].requires = ["main"]
         else:
+            self.cpp_info.requires.append("python::PythonLibs")
             self.cpp_info.includedirs.append(
                 os.path.join(self.package_folder, "include", "pybind11")
             )

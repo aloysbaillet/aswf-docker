@@ -484,15 +484,15 @@ groups:
         - clang
         - ninja
       base1:
-        - boost
         - cmake
+        - python
+        - pybind11
+        - boost
         - cppunit
         - glew
         - glfw
         - log4cplus
-        - python
         - tbb
-        - pybind11
       base2:
         - qt
       base3:
