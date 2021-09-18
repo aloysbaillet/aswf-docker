@@ -26,4 +26,3 @@ class TestPackageConan(ConanFile):
                     ),
                     run_environment=True,
                 )
-

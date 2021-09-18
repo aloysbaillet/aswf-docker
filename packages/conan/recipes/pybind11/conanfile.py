@@ -12,7 +12,15 @@ class PyBind11Conan(ConanFile):
     license = "BSD-3-Clause"
     url = "https://github.com/conan-io/conan-center-index"
     exports_sources = "CMakeLists.txt"
-    settings = "os", "arch", "compiler", "build_type", "ci_common", "vfx_platform", "python"
+    settings = (
+        "os",
+        "arch",
+        "compiler",
+        "build_type",
+        "ci_common",
+        "vfx_platform",
+        "python",
+    )
     generators = "cmake"
     no_copy_source = True
 

@@ -97,7 +97,11 @@ class ClangConan(ConanFile):
         cmake.build()
 
     def package(self):
-        self.copy("LICENSE.TXT", dst="licenses", src=os.path.join(self._source_subfolder, "llvm"))
+        self.copy(
+            "LICENSE.TXT",
+            dst="licenses",
+            src=os.path.join(self._source_subfolder, "llvm"),
+        )
         cmake = self._configure_cmake()
         cmake.install()
 

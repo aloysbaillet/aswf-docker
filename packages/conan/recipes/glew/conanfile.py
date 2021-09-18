@@ -4,6 +4,7 @@ from conans import ConanFile, CMake, tools
 
 required_conan_version = ">=1.28.0"
 
+
 class GlewConan(ConanFile):
     name = "glew"
     description = "The GLEW library"
@@ -17,13 +18,9 @@ class GlewConan(ConanFile):
     options = {
         "shared": [True, False],
         "fPIC": [True, False],
-        "with_egl": [True, False]
+        "with_egl": [True, False],
     }
-    default_options = {
-        "shared": False,
-        "fPIC": True,
-        "with_egl": False
-    }
+    default_options = {"shared": False, "fPIC": True, "with_egl": False}
 
     _cmake = None
 
@@ -86,7 +83,9 @@ class GlewConan(ConanFile):
         self.cpp_info.names["cmake_find_package"] = "GLEW"
         self.cpp_info.names["cmake_find_package_multi"] = "GLEW"
         self.cpp_info.components["glewlib"].names["cmake_find_package"] = "GLEW"
-        self.cpp_info.components["glewlib"].names["cmake_find_package_multi"] = "glew" if self.options.shared else "glew_s"
+        self.cpp_info.components["glewlib"].names["cmake_find_package_multi"] = (
+            "glew" if self.options.shared else "glew_s"
+        )
         self.cpp_info.components["glewlib"].libs = tools.collect_libs(self)
         if self.settings.os == "Windows" and not self.options.shared:
             self.cpp_info.components["glewlib"].defines.append("GLEW_STATIC")

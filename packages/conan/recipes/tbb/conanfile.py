@@ -17,13 +17,13 @@ that have future-proof scalability"""
         "shared": [True, False],
         "fPIC": [True, False],
         "tbbmalloc": [True, False],
-        "tbbproxy": [True, False]
+        "tbbproxy": [True, False],
     }
     default_options = {
         "shared": True,
         "fPIC": True,
         "tbbmalloc": False,
-        "tbbproxy": False
+        "tbbproxy": False,
     }
 
     @property
@@ -35,16 +35,23 @@ that have future-proof scalability"""
             del self.options.fPIC
 
     def configure(self):
-        if self.settings.os == "Macos" and \
-           self.settings.compiler == "apple-clang" and \
-           tools.Version(self.settings.compiler.version) < "8.0":
-            raise ConanInvalidConfiguration("%s %s couldn't be built by apple-clang < 8.0" % (self.name, self.version))
+        if (
+            self.settings.os == "Macos"
+            and self.settings.compiler == "apple-clang"
+            and tools.Version(self.settings.compiler.version) < "8.0"
+        ):
+            raise ConanInvalidConfiguration(
+                "%s %s couldn't be built by apple-clang < 8.0"
+                % (self.name, self.version)
+            )
         if not self.options.shared:
             self.output.warn("Intel-TBB strongly discourages usage of static linkage")
-        if self.options.tbbproxy and \
-           (not self.options.shared or \
-            not self.options.tbbmalloc):
-            raise ConanInvalidConfiguration("tbbproxy needs tbbmaloc and shared options")
+        if self.options.tbbproxy and (
+            not self.options.shared or not self.options.tbbmalloc
+        ):
+            raise ConanInvalidConfiguration(
+                "tbbproxy needs tbbmaloc and shared options"
+            )
 
     def package_id(self):
         del self.info.options.tbbmalloc
@@ -72,7 +79,10 @@ that have future-proof scalability"""
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
-        os.rename("one{}-{}".format(self.name.upper(), self.version.upper()), self._source_subfolder)
+        os.rename(
+            "one{}-{}".format(self.name.upper(), self.version.upper()),
+            self._source_subfolder,
+        )
 
     def build(self):
         def add_flag(name, value):
@@ -87,12 +97,15 @@ that have future-proof scalability"""
         tools.replace_in_file(linux_include, "= gcc", "= $(CC)")
 
         if self.version != "2019_u9" and self.settings.build_type == "Debug":
-            tools.replace_in_file(os.path.join(self._source_subfolder, "Makefile"), "release", "debug")
+            tools.replace_in_file(
+                os.path.join(self._source_subfolder, "Makefile"), "release", "debug"
+            )
 
         if self._base_compiler == "Visual Studio":
-            tools.save(os.path.join(self._source_subfolder, "build", "big_iron_msvc.inc"),
-                       # copy of big_iron.inc adapted for MSVC
-                       """
+            tools.save(
+                os.path.join(self._source_subfolder, "build", "big_iron_msvc.inc"),
+                # copy of big_iron.inc adapted for MSVC
+                """
 LIB_LINK_CMD = {}.exe
 LIB_OUTPUT_KEY = /OUT:
 LIB_LINK_FLAGS =
@@ -114,7 +127,10 @@ MALLOC.DEF =
 MALLOC_NO_VERSION.DLL =
 MALLOCPROXY.DLL =
 MALLOCPROXY.DEF =
-""".format("xilib" if self.settings.compiler == "intel" else "lib"))
+""".format(
+                    "xilib" if self.settings.compiler == "intel" else "lib"
+                ),
+            )
             extra = "" if self.options.shared else "extra_inc=big_iron_msvc.inc"
         else:
             extra = "" if self.options.shared else "extra_inc=big_iron.inc"
@@ -161,7 +177,7 @@ MALLOCPROXY.DEF =
                     "12": "vc12",
                     "14": "vc14",
                     "15": "vc14.1",
-                    "16": "vc14.2"
+                    "16": "vc14.2",
                 }[str(self._base_compiler.version)]
             extra += " runtime=%s" % runtime
 
@@ -170,9 +186,13 @@ MALLOCPROXY.DEF =
             else:
                 extra += " compiler=cl"
 
-        make = tools.get_env("CONAN_MAKE_PROGRAM", tools.which("make") or tools.which("mingw32-make"))
+        make = tools.get_env(
+            "CONAN_MAKE_PROGRAM", tools.which("make") or tools.which("mingw32-make")
+        )
         if not make:
-            raise ConanInvalidConfiguration("This package needs 'make' in the path to build")
+            raise ConanInvalidConfiguration(
+                "This package needs 'make' in the path to build"
+            )
 
         with tools.chdir(self._source_subfolder):
             # intentionally not using AutoToolsBuildEnvironment for now - it's broken for clang-cl
@@ -192,28 +212,64 @@ MALLOCPROXY.DEF =
 
     def package(self):
         self.copy("LICENSE", dst="licenses", src=self._source_subfolder)
-        self.copy(pattern="*.h", dst="include", src="%s/include" % self._source_subfolder)
-        self.copy(pattern="*", dst="include/tbb/compat", src="%s/include/tbb/compat" % self._source_subfolder)
+        self.copy(
+            pattern="*.h", dst="include", src="%s/include" % self._source_subfolder
+        )
+        self.copy(
+            pattern="*",
+            dst="include/tbb/compat",
+            src="%s/include/tbb/compat" % self._source_subfolder,
+        )
         build_folder = "%s/build/" % self._source_subfolder
         build_type = "debug" if self.settings.build_type == "Debug" else "release"
-        self.copy(pattern="*%s*.lib" % build_type, dst="lib", src=build_folder, keep_path=False)
-        self.copy(pattern="*%s*.a" % build_type, dst="lib", src=build_folder, keep_path=False)
-        self.copy(pattern="*%s*.dll" % build_type, dst="bin", src=build_folder, keep_path=False)
-        self.copy(pattern="*%s*.dylib" % build_type, dst="lib", src=build_folder, keep_path=False)
+        self.copy(
+            pattern="*%s*.lib" % build_type,
+            dst="lib",
+            src=build_folder,
+            keep_path=False,
+        )
+        self.copy(
+            pattern="*%s*.a" % build_type, dst="lib", src=build_folder, keep_path=False
+        )
+        self.copy(
+            pattern="*%s*.dll" % build_type,
+            dst="bin",
+            src=build_folder,
+            keep_path=False,
+        )
+        self.copy(
+            pattern="*%s*.dylib" % build_type,
+            dst="lib",
+            src=build_folder,
+            keep_path=False,
+        )
         # Copy also .dlls to lib folder so consumers can link against them directly when using MinGW
         if self.settings.os == "Windows" and self.settings.compiler == "gcc":
-            self.copy("*%s*.dll" % build_type, dst="lib", src=build_folder, keep_path=False)
+            self.copy(
+                "*%s*.dll" % build_type, dst="lib", src=build_folder, keep_path=False
+            )
 
         if self.settings.os == "Linux":
             extension = "so"
             if self.options.shared:
-                self.copy("*%s*.%s.*" % (build_type, extension), "lib", build_folder,
-                          keep_path=False)
+                self.copy(
+                    "*%s*.%s.*" % (build_type, extension),
+                    "lib",
+                    build_folder,
+                    keep_path=False,
+                )
                 outputlibdir = os.path.join(self.package_folder, "lib")
                 os.chdir(outputlibdir)
                 for fpath in os.listdir(outputlibdir):
-                    self.run("ln -s \"%s\" \"%s\"" %
-                             (fpath, fpath[0:fpath.rfind("." + extension) + len(extension) + 1]))
+                    self.run(
+                        'ln -s "%s" "%s"'
+                        % (
+                            fpath,
+                            fpath[
+                                0 : fpath.rfind("." + extension) + len(extension) + 1
+                            ],
+                        )
+                    )
 
     def package_info(self):
         self.cpp_info.names["cmake_find_package"] = "TBB"
@@ -226,16 +282,26 @@ MALLOCPROXY.DEF =
             self.cpp_info.components["libtbb"].system_libs = ["dl", "rt", "pthread"]
         # tbbmalloc
         if self.options.tbbmalloc:
-            self.cpp_info.components["tbbmalloc"].names["cmake_find_package"] = "tbbmalloc"
-            self.cpp_info.components["tbbmalloc"].names["cmake_find_package_multi"] = "tbbmalloc"
+            self.cpp_info.components["tbbmalloc"].names[
+                "cmake_find_package"
+            ] = "tbbmalloc"
+            self.cpp_info.components["tbbmalloc"].names[
+                "cmake_find_package_multi"
+            ] = "tbbmalloc"
             self.cpp_info.components["tbbmalloc"].libs = [self._lib_name("tbbmalloc")]
             if self.settings.os == "Linux":
                 self.cpp_info.components["tbbmalloc"].system_libs = ["dl", "pthread"]
             # tbbmalloc_proxy
             if self.options.tbbproxy:
-                self.cpp_info.components["tbbmalloc_proxy"].names["cmake_find_package"] = "tbbmalloc_proxy"
-                self.cpp_info.components["tbbmalloc_proxy"].names["cmake_find_package_multi"] = "tbbmalloc_proxy"
-                self.cpp_info.components["tbbmalloc_proxy"].libs = [self._lib_name("tbbmalloc_proxy")]
+                self.cpp_info.components["tbbmalloc_proxy"].names[
+                    "cmake_find_package"
+                ] = "tbbmalloc_proxy"
+                self.cpp_info.components["tbbmalloc_proxy"].names[
+                    "cmake_find_package_multi"
+                ] = "tbbmalloc_proxy"
+                self.cpp_info.components["tbbmalloc_proxy"].libs = [
+                    self._lib_name("tbbmalloc_proxy")
+                ]
                 self.cpp_info.components["tbbmalloc_proxy"].requires = ["tbbmalloc"]
 
     def _lib_name(self, name):

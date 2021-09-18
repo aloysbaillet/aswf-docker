@@ -117,7 +117,7 @@ class PythonConan(ConanFile):
         with tools.environment_append(
             {
                 "PATH": os.path.join(self.package_folder, "bin"),
-                "LD_LIBRARY_PATH": os.path.join(self.package_folder, "lib")
+                "LD_LIBRARY_PATH": os.path.join(self.package_folder, "lib"),
             }
         ):
             self.run(f"{py_exe} get-pip.py")
@@ -128,7 +128,7 @@ class PythonConan(ConanFile):
     def package_info(self):
         self.cpp_info.filenames["pkg_config"] = "python"
         self.user_info.python_interp = f"python{self.major_minor}"
-        
+
         self.cpp_info.components["PythonInterp"].bindirs = ["bin"]
 
         self.cpp_info.components["PythonLibs"].requires = ["PythonInterp"]
@@ -140,6 +140,8 @@ class PythonConan(ConanFile):
         self.cpp_info.components["PythonLibs"].includedirs = [
             f"include/python{self.major_minor}{suffix}"
         ]
-        self.cpp_info.components["PythonLibs"].libs = [f"python{self.major_minor}{suffix}"]
+        self.cpp_info.components["PythonLibs"].libs = [
+            f"python{self.major_minor}{suffix}"
+        ]
         if self.settings.os == "Windows":
             self.cpp_info.components["PythonLibs"].defines.append("PYTHON_DLL")

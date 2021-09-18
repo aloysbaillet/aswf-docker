@@ -2,6 +2,7 @@ from conans import ConanFile, CMake, tools
 from conans.errors import ConanInvalidConfiguration
 import os
 
+
 class NinjaConan(ConanFile):
     name = "ninja"
     description = "Ninja is a small build system with a focus on speed"

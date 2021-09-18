@@ -7,9 +7,11 @@ required_conan_version = ">=1.28.0"
 
 class GlfwConan(ConanFile):
     name = "glfw"
-    description = "GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan" \
-                  "application development. It provides a simple, platform-independent API for creating" \
-                  "windows, contexts and surfaces, reading input, handling events, etc."
+    description = (
+        "GLFW is a free, Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan"
+        "application development. It provides a simple, platform-independent API for creating"
+        "windows, contexts and surfaces, reading input, handling events, etc."
+    )
     license = "Zlib"
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://github.com/glfw/glfw"
@@ -61,18 +63,27 @@ class GlfwConan(ConanFile):
         for patch in self.conan_data.get("patches", {}).get(self.version, []):
             tools.patch(**patch)
         # don't force PIC
-        tools.replace_in_file(os.path.join(self._source_subfolder, "src", "CMakeLists.txt"),
-                              "POSITION_INDEPENDENT_CODE ON", "")
+        tools.replace_in_file(
+            os.path.join(self._source_subfolder, "src", "CMakeLists.txt"),
+            "POSITION_INDEPENDENT_CODE ON",
+            "",
+        )
         # Allow to link vulkan-loader into shared glfw
         if self.options.vulkan_static:
             cmakelists = os.path.join(self._source_subfolder, "CMakeLists.txt")
-            tools.replace_in_file(cmakelists,
-                                  'message(FATAL_ERROR "You are trying to link the Vulkan loader static library into the GLFW shared library")',
-                                  "")
-            tools.replace_in_file(cmakelists,
-                                  'list(APPEND glfw_PKG_DEPS "vulkan")',
-                                  ('list(APPEND glfw_PKG_DEPS "vulkan")\n'
-                                   'list(APPEND glfw_LIBRARIES "{}")').format(self.deps_cpp_info["vulkan-loader"].libs[0]))
+            tools.replace_in_file(
+                cmakelists,
+                'message(FATAL_ERROR "You are trying to link the Vulkan loader static library into the GLFW shared library")',
+                "",
+            )
+            tools.replace_in_file(
+                cmakelists,
+                'list(APPEND glfw_PKG_DEPS "vulkan")',
+                (
+                    'list(APPEND glfw_PKG_DEPS "vulkan")\n'
+                    'list(APPEND glfw_LIBRARIES "{}")'
+                ).format(self.deps_cpp_info["vulkan-loader"].libs[0]),
+            )
 
     def _configure_cmake(self):
         if not self._cmake:
@@ -83,7 +94,9 @@ class GlfwConan(ConanFile):
             self._cmake.definitions["GLFW_INSTALL"] = True
             self._cmake.definitions["GLFW_VULKAN_STATIC"] = self.options.vulkan_static
             if self.settings.compiler == "Visual Studio":
-                self._cmake.definitions["USE_MSVC_RUNTIME_LIBRARY_DLL"] = "MD" in self.settings.compiler.runtime
+                self._cmake.definitions["USE_MSVC_RUNTIME_LIBRARY_DLL"] = (
+                    "MD" in self.settings.compiler.runtime
+                )
             self._cmake.configure()
         return self._cmake
 
@@ -99,8 +112,10 @@ class GlfwConan(ConanFile):
         tools.rmdir(os.path.join(self.package_folder, "lib", "cmake"))
         tools.rmdir(os.path.join(self.package_folder, "lib", "pkgconfig"))
         self._create_cmake_module_alias_targets(
-            os.path.join(self.package_folder, self._module_subfolder, self._module_file),
-            {"glfw": "glfw::glfw"}
+            os.path.join(
+                self.package_folder, self._module_subfolder, self._module_file
+            ),
+            {"glfw": "glfw::glfw"},
         )
 
     @staticmethod
@@ -130,7 +145,9 @@ class GlfwConan(ConanFile):
         self.cpp_info.names["cmake_find_package_multi"] = "glfw"
         self.cpp_info.names["pkg_config"] = "glfw3"
         self.cpp_info.builddirs.append(self._module_subfolder)
-        self.cpp_info.build_modules = [os.path.join(self._module_subfolder, self._module_file)]
+        self.cpp_info.build_modules = [
+            os.path.join(self._module_subfolder, self._module_file)
+        ]
         self.cpp_info.libs = tools.collect_libs(self)
         if self.settings.os == "Linux":
             self.cpp_info.system_libs.extend(["m", "pthread", "dl", "rt"])

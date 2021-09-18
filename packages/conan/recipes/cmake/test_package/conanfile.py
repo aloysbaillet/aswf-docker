@@ -15,4 +15,4 @@ class TestPackageConan(ConanFile):
             require_version = str(self.deps_cpp_info["cmake"].version)
             self.output.info("Expected version: {}".format(require_version))
             assert_cmake_version = "cmake version %s" % require_version
-            assert(assert_cmake_version in output_str)
+            assert assert_cmake_version in output_str

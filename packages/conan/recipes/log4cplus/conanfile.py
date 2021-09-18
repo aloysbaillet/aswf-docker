@@ -8,28 +8,32 @@ class Log4cplusConan(ConanFile):
     url = "https://github.com/conan-io/conan-center-index"
     homepage = "https://github.com/log4cplus/log4cplus"
     topics = ("conan", "log4cplus", "logging", "log", "logging-library")
-    license = ("BSD-2-Clause, Apache-2.0")
+    license = "BSD-2-Clause, Apache-2.0"
     exports_sources = ["CMakeLists.txt"]
     generators = "cmake"
     settings = "os", "compiler", "build_type", "arch", "ci_common", "vfx_platform"
-    options = {"shared": [True, False],
-               "fPIC": [True, False],
-               "single_threaded": [True, False],
-               "build_logging_server": [True, False],
-               "with_iconv": [True, False],
-               "working_locale": [True, False],
-               "working_c_locale": [True, False],
-               "decorated_name": [True, False],
-               "unicode": [True, False]}
-    default_options = {"shared": False,
-                       "fPIC": True,
-                       "single_threaded": False,
-                       "build_logging_server": False,
-                       "with_iconv": False,
-                       "working_locale": False,
-                       "working_c_locale": False,
-                       "decorated_name": False,
-                       "unicode": True}
+    options = {
+        "shared": [True, False],
+        "fPIC": [True, False],
+        "single_threaded": [True, False],
+        "build_logging_server": [True, False],
+        "with_iconv": [True, False],
+        "working_locale": [True, False],
+        "working_c_locale": [True, False],
+        "decorated_name": [True, False],
+        "unicode": [True, False],
+    }
+    default_options = {
+        "shared": False,
+        "fPIC": True,
+        "single_threaded": False,
+        "build_logging_server": False,
+        "with_iconv": False,
+        "working_locale": False,
+        "working_c_locale": False,
+        "decorated_name": False,
+        "unicode": True,
+    }
     short_paths = True
 
     _cmake = None
@@ -68,26 +72,41 @@ class Log4cplusConan(ConanFile):
         self._cmake.definitions["UNICODE"] = self.options.unicode
         self._cmake.definitions["LOG4CPLUS_BUILD_TESTING"] = False
         self._cmake.definitions["WITH_UNIT_TESTS"] = False
-        self._cmake.definitions["LOG4CPLUS_ENABLE_DECORATED_LIBRARY_NAME"] = self.options.decorated_name
+        self._cmake.definitions[
+            "LOG4CPLUS_ENABLE_DECORATED_LIBRARY_NAME"
+        ] = self.options.decorated_name
         self._cmake.definitions["LOG4CPLUS_QT4"] = False
         self._cmake.definitions["LOG4CPLUS_QT5"] = False
-        self._cmake.definitions["LOG4CPLUS_SINGLE_THREADED"] = self.options.single_threaded
-        self._cmake.definitions["LOG4CPLUS_BUILD_LOGGINGSERVER"] = self.options.build_logging_server
+        self._cmake.definitions[
+            "LOG4CPLUS_SINGLE_THREADED"
+        ] = self.options.single_threaded
+        self._cmake.definitions[
+            "LOG4CPLUS_BUILD_LOGGINGSERVER"
+        ] = self.options.build_logging_server
         self._cmake.definitions["WITH_ICONV"] = self.options.with_iconv
-        self._cmake.definitions["LOG4CPLUS_WORKING_LOCALE"] = self.options.working_locale
-        self._cmake.definitions["LOG4CPLUS_WORKING_C_LOCALE"] = self.options.working_c_locale
+        self._cmake.definitions[
+            "LOG4CPLUS_WORKING_LOCALE"
+        ] = self.options.working_locale
+        self._cmake.definitions[
+            "LOG4CPLUS_WORKING_C_LOCALE"
+        ] = self.options.working_c_locale
         self._cmake.configure(build_dir=self._build_subfolder)
         return self._cmake
 
     def _patch_sources(self):
         if tools.Version(self.version) > "2.0":
             # don't force PIC
-            tools.replace_in_file(os.path.join(self._source_subfolder, "CMakeLists.txt"),
-                                "set (CMAKE_POSITION_INDEPENDENT_CODE ON)", "")
+            tools.replace_in_file(
+                os.path.join(self._source_subfolder, "CMakeLists.txt"),
+                "set (CMAKE_POSITION_INDEPENDENT_CODE ON)",
+                "",
+            )
         else:
-            tools.replace_in_file(os.path.join(self._source_subfolder, "Log4CPlusCPack.cmake"),
-                                "${CMAKE_SOURCE_DIR}/LICENSE", "${CMAKE_SOURCE_DIR}/source_subfolder/LICENSE")
-            
+            tools.replace_in_file(
+                os.path.join(self._source_subfolder, "Log4CPlusCPack.cmake"),
+                "${CMAKE_SOURCE_DIR}/LICENSE",
+                "${CMAKE_SOURCE_DIR}/source_subfolder/LICENSE",
+            )
 
     def build(self):
         self._patch_sources()
