@@ -119,7 +119,13 @@ class Builder:
             " ".join(base_cmd + cmd), dry_run=dry_run,
         )
 
-    def build(self, dry_run: bool = False, progress: str = "") -> None:
+    def build(
+        self,
+        dry_run: bool = False,
+        progress: str = "",
+        keep_source=False,
+        keep_build=False,
+    ) -> None:
         path = self.make_bake_jsonfile()
         if path:
             self._run(
@@ -152,7 +158,7 @@ class Builder:
                 os.path.join(conan_base, "recipes"): "/tmp/c/recipes",
                 os.path.join(conan_base, "ccache"): "/tmp/ccache",
             }
-            base_cmd = ["docker", "run", "-t", "--rm"]
+            base_cmd = ["docker", "run", "-it", "--rm"]
             for name, value in envs.items():
                 base_cmd.append("-e")
                 base_cmd.append(f"{name}={value}")
@@ -175,17 +181,18 @@ class Builder:
                 "ASWF_" + image.upper() + "_VERSION"
             )
             conan_version = f"{image}/{full_version}@{self.build_info.docker_org}/{version_info.conan_profile}"
+            build_cmd = [
+                "conan",
+                "create",
+                f"/tmp/c/recipes/{image}",
+                conan_version,
+            ]
+            if keep_source:
+                build_cmd.append("--keep-source")
+            if keep_build:
+                build_cmd.append("--keep-build")
             self._run_in_docker(
-                base_cmd,
-                [
-                    "conan",
-                    "create",
-                    f"/tmp/c/recipes/{image}",
-                    conan_version,
-                    "--keep-source",
-                    "--keep-build",
-                ],
-                dry_run,
+                base_cmd, build_cmd, dry_run,
             )
             if self.push:
                 self._run_in_docker(

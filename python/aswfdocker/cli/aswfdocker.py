@@ -152,6 +152,15 @@ def get_group_info(build_info, ci_image_type, groups, versions, full_name, targe
     default="auto",
     help='Set type of progress output for "docker buildx bake" command.',
 )
+@click.option(
+    "--keep-source", "-ks", is_flag=True, help="Instruct Conan to keep sources"
+)
+@click.option(
+    "--keep-build",
+    "-kb",
+    is_flag=True,
+    help="Instruct Conan to keep build - will fail is no previous build available!",
+)
 @pass_build_info
 def build(
     build_info,
@@ -163,6 +172,8 @@ def build(
     push,
     dry_run,
     progress,
+    keep_source,
+    keep_build,
 ):
     """Builds a ci-package or ci-image Docker image."""
     if push == "YES":
@@ -176,7 +187,12 @@ def build(
         build_info, ci_image_type, group, version, full_name, target
     )
     b = builder.Builder(build_info=build_info, group_info=group_info, push=pushb)
-    b.build(dry_run=dry_run, progress=progress)
+    b.build(
+        dry_run=dry_run,
+        progress=progress,
+        keep_source=keep_source,
+        keep_build=keep_build,
+    )
 
 
 @cli.command()
