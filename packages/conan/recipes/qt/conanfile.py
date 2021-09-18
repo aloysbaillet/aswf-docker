@@ -43,6 +43,7 @@ class QtConan(ConanFile):
         "qtscript",
         "qtmultimedia",
         "qttools",
+        "qtxml",
         "qtxmlpatterns",
         "qttranslations",
         "qtdoc",
@@ -795,8 +796,8 @@ Examples = bin/datadir/examples"""
             if not self.options.get_safe(module):
                 tools.rmdir(os.path.join(self.package_folder, "licenses", module))
         tools.rmdir(os.path.join(self.package_folder, "lib", "pkgconfig"))
-        for mask in ["Find*.cmake", "*Config.cmake", "*-config.cmake"]:
-            tools.remove_files_by_mask(self.package_folder, mask)
+        # for mask in ["Find*.cmake", "*Config.cmake", "*-config.cmake"]:
+        #     tools.remove_files_by_mask(self.package_folder, mask)
         tools.remove_files_by_mask(os.path.join(self.package_folder, "lib"), "*.la*")
         tools.remove_files_by_mask(os.path.join(self.package_folder, "lib"), "*.pdb*")
         tools.remove_files_by_mask(os.path.join(self.package_folder, "bin"), "*.pdb")
@@ -805,12 +806,12 @@ Examples = bin/datadir/examples"""
         for fl in glob.glob(os.path.join(self.package_folder, "lib", "*Qt5Bootstrap*")):
             os.remove(fl)
 
-        for m in os.listdir(os.path.join(self.package_folder, "lib", "cmake")):
-            module = os.path.join(
-                self.package_folder, "lib", "cmake", m, "%sMacros.cmake" % m
-            )
-            if not os.path.isfile(module):
-                tools.rmdir(os.path.join(self.package_folder, "lib", "cmake", m))
+        # for m in os.listdir(os.path.join(self.package_folder, "lib", "cmake")):
+        #     module = os.path.join(
+        #         self.package_folder, "lib", "cmake", m, "%sMacros.cmake" % m
+        #     )
+        #     if not os.path.isfile(module):
+        #         tools.rmdir(os.path.join(self.package_folder, "lib", "cmake", m))
 
         extension = ""
         if self.settings.os == "Windows":
@@ -878,8 +879,8 @@ Examples = bin/datadir/examples"""
                 self.info.settings.compiler.runtime = "MT/MTd"
 
     def package_info(self):
-        self.cpp_info.names["cmake_find_package"] = "Qt5"
-        self.cpp_info.names["cmake_find_package_multi"] = "Qt5"
+        self.cpp_info.names["cmake_find_package"] = "qt"
+        self.cpp_info.names["cmake_find_package_multi"] = "qt"
 
         libsuffix = ""
         if self.settings.build_type == "Debug":
@@ -906,7 +907,7 @@ Examples = bin/datadir/examples"""
                 "cmake_find_package_multi"
             ] = module
             self.cpp_info.components[componentname].libs = [
-                "Qt5%s%s" % (module, libsuffix)
+                "qt%s%s" % (module, libsuffix)
             ]
             self.cpp_info.components[componentname].includedirs = [
                 "include",
@@ -972,7 +973,21 @@ Examples = bin/datadir/examples"""
             _create_module("OpenGLExtensions", ["Gui"])
         _create_module("DBus")
         _create_module("Concurrent")
-        _create_module("Xml")
+        if self.options.qtxml:
+            _create_module("Xml")
+            self.cpp_info.components["qtQxml"].names[
+                "cmake_find_package_multi"
+            ] = "Qt5Xml"
+            self.cpp_info.components["qtQxml"].filenames[
+                "cmake_find_package_multi"
+            ] = "Qt5Xml"
+            _create_module("XmlPatterns", ["Xml"])
+            self.cpp_info.components["XmlPatterns"].names[
+                "cmake_find_package_multi"
+            ] = "Qt5XmlPatterns"
+            self.cpp_info.components["XmlPatterns"].filenames[
+                "cmake_find_package_multi"
+            ] = "Qt5XmlPatterns"
 
         if self.options.qtdeclarative:
             _create_module("Qml", ["Network"])
@@ -1082,13 +1097,7 @@ Examples = bin/datadir/examples"""
 
         if self.options.qtwebengine:
             _create_module(
-                "WebEngineCore",
-                [
-                    "Gui",
-                    "Quick",
-                    "WebChannel",
-                    "Positioning",
-                ],
+                "WebEngineCore", ["Gui", "Quick", "WebChannel", "Positioning",],
             )
             _create_module("WebEngine", ["WebEngineCore"])
             _create_module(
@@ -1174,22 +1183,18 @@ Examples = bin/datadir/examples"""
                 ["3DAnimation", "3DRender", "3DQuick", "3DCore", "Gui", "Qml"],
             )
             extras = [
-                    "3DQuick",
-                    "3DRender",
-                    "3DLogic",
-                    "3DCore",
-                    "Gui",
-                    "Qml",
-                ]
+                "3DQuick",
+                "3DRender",
+                "3DLogic",
+                "3DCore",
+                "Gui",
+                "Qml",
+            ]
             if qt_version >= "5.15":
-                extras.extend([
-                    "3DExtras",
-                    "3DInput",
-                ])
-                _create_module(
-                "3DQuickExtras",
-                extras
-            )
+                extras.extend(
+                    ["3DExtras", "3DInput",]
+                )
+                _create_module("3DQuickExtras", extras)
             if qt_version >= "5.15":
                 _create_module(
                     "3DQuickInput", ["3DInput", "3DQuick", "3DCore", "Gui", "Qml"]
@@ -1342,15 +1347,16 @@ Examples = bin/datadir/examples"""
         for m in os.listdir(os.path.join("lib", "cmake")):
             module = os.path.join("lib", "cmake", m, "%sMacros.cmake" % m)
             component_name = m.replace("Qt5", "qt")
-            self.cpp_info.components[component_name].build_modules[
-                "cmake_find_package"
-            ].append(module)
-            self.cpp_info.components[component_name].build_modules[
-                "cmake_find_package_multi"
-            ].append(module)
-            self.cpp_info.components[component_name].builddirs.append(
-                os.path.join("lib", "cmake", m)
-            )
+            if component_name != "qt":
+                self.cpp_info.components[component_name].build_modules[
+                    "cmake_find_package"
+                ].append(module)
+                self.cpp_info.components[component_name].build_modules[
+                    "cmake_find_package_multi"
+                ].append(module)
+                self.cpp_info.components[component_name].builddirs.append(
+                    os.path.join("lib", "cmake", m)
+                )
 
         objects_dirs = glob.glob(os.path.join(self.package_folder, "lib", "objects-*/"))
         for object_dir in objects_dirs:

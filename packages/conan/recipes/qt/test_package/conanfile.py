@@ -21,7 +21,9 @@ class TestPackageConan(ConanFile):
         with tools.chdir("qmake_folder"):
             self.output.info("Building with qmake")
 
-            with tools.vcvars(self.settings) if self.settings.compiler == "Visual Studio" else tools.no_op():
+            with tools.vcvars(
+                self.settings
+            ) if self.settings.compiler == "Visual Studio" else tools.no_op():
                 args = [self.source_folder, "DESTDIR=bin"]
 
                 def _getenvpath(var):
@@ -31,17 +33,21 @@ class TestPackageConan(ConanFile):
                         os.environ[var] = val
                     return val
 
-                value = _getenvpath('CC')
+                value = _getenvpath("CC")
                 if value:
-                    args += ['QMAKE_CC=' + value,
-                             'QMAKE_LINK_C=' + value,
-                             'QMAKE_LINK_C_SHLIB=' + value]
+                    args += [
+                        "QMAKE_CC=" + value,
+                        "QMAKE_LINK_C=" + value,
+                        "QMAKE_LINK_C_SHLIB=" + value,
+                    ]
 
-                value = _getenvpath('CXX')
+                value = _getenvpath("CXX")
                 if value:
-                    args += ['QMAKE_CXX=' + value,
-                             'QMAKE_LINK=' + value,
-                             'QMAKE_LINK_SHLIB=' + value]
+                    args += [
+                        "QMAKE_CXX=" + value,
+                        "QMAKE_LINK=" + value,
+                        "QMAKE_LINK_SHLIB=" + value,
+                    ]
 
                 self.run("qmake %s" % " ".join(args), run_environment=True)
                 if tools.os_info.is_windows:
@@ -58,7 +64,7 @@ class TestPackageConan(ConanFile):
         with tools.environment_append(env_build.vars):
             cmake = CMake(self, set_cmake_flags=True)
             if self.settings.os == "Macos":
-                cmake.definitions['CMAKE_OSX_DEPLOYMENT_TARGET'] = '10.14'
+                cmake.definitions["CMAKE_OSX_DEPLOYMENT_TARGET"] = "10.14"
             cmake.configure()
             cmake.build()
 
