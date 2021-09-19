@@ -109,9 +109,9 @@ class PythonConan(ConanFile):
 
         python_version = tools.Version(self.version)
         if python_version.major == "3":
-            tools.download("https://bootstrap.pypa.io/get-pip.py", "get-pip.py")
+            tools.download("https://bootstrap.pypa.io/get-pip.py", "get-pip.py", overwrite=True)
         else:
-            tools.download("https://bootstrap.pypa.io/pip/2.7/get-pip.py", "get-pip.py")
+            tools.download("https://bootstrap.pypa.io/pip/2.7/get-pip.py", "get-pip.py", overwrite=True)
 
         py_exe = os.path.join(self.package_folder, "bin", f"python{self.major_minor}")
         with tools.environment_append(
