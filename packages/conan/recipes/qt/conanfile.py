@@ -336,7 +336,10 @@ class QtConan(ConanFile):
                 )
 
     def requirements(self):
-        pass
+        if self.options.qtwebengine and self.settings.os == "Linux" and tools.Version(self.version) >= "5.15":
+            # For now avoid external prebuild dependencies...
+            # self.requires("opus/1.3.1")
+            pass
 
     def source(self):
         tools.get(**self.conan_data["sources"][self.version])
@@ -724,7 +727,10 @@ class QtConan(ConanFile):
             args += ['QMAKE_CXXFLAGS+="-ftemplate-depth=1024"']
 
         if self.options.qtwebengine and self.settings.os == "Linux":
-            args += ["-qt-webengine-ffmpeg", "-system-webengine-opus"]
+            args += ["-qt-webengine-ffmpeg"]
+            if tools.Version(self.version) < "5.15":
+                # Qt 5.15 requires opus 1.3.1 which is not available on centos7
+                args += ["-system-webengine-opus"]
 
         if self.options.config:
             args.append(str(self.options.config))
@@ -1172,11 +1178,6 @@ Examples = bin/datadir/examples"""
             _create_module("3DAnimation", ["3DRender", "3DCore", "Gui"])
 
             _create_module("3DLogic", ["3DCore", "Gui"])
-            if qt_version >= "5.15":
-                _create_module("3DInput", ["3DCore", "GamePad", "Gui"])
-                _create_module(
-                    "3DExtras", ["3DRender", "3DInput", "3DLogic", "3DCore", "Gui"]
-                )
             _create_module("3DQuick", ["3DCore", "Quick", "Gui", "Qml"])
             _create_module(
                 "3DQuickAnimation",

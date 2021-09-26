@@ -61,8 +61,6 @@ class PySideConan(ConanFile):
         vars = tools.RunEnvironment(self).vars
         vars.update(
             {
-                "LLVM_INSTALL_DIR": self.deps_cpp_info["clang"].rootpath,
-                "CLANG_INSTALL_DIR": self.deps_cpp_info["clang"].rootpath,
                 "Qt5_DIR": self.build_folder,
             }
         )
