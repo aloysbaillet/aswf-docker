@@ -22,6 +22,7 @@ class ImathConan(ConanFile):
     )
     generators = "cmake_find_package_multi"
 
+    _cmake = None
     _source_subfolder = "source_subfolder"
 
     def requirements(self):
@@ -43,10 +44,11 @@ class ImathConan(ConanFile):
         if self._cmake:
             return self._cmake
 
-        self._cmake = CMake(self)
-        self._cmake.definitions["PYTHON"] = "ON"
-        self._cmake.configure()
-        return self._cmake
+        with tools.environment_append(tools.RunEnvironment(self).vars):
+            self._cmake = CMake(self)
+            self._cmake.definitions["PYTHON"] = "ON"
+            self._cmake.configure(source_folder=self._source_subfolder)
+            return self._cmake
 
     def build(self):
         cmake = self._configure_cmake()
@@ -64,3 +66,4 @@ class ImathConan(ConanFile):
         self.env_info.PYTHONPATH.append(
             os.path.join(self.package_folder, "lib", pymajorminor, "site-packages")
         )
+        self.env_info.CMAKE_PREFIX_PATH = os.path.join(self.package_folder, "lib", "cmake")
