@@ -336,7 +336,11 @@ class QtConan(ConanFile):
                 )
 
     def requirements(self):
-        if self.options.qtwebengine and self.settings.os == "Linux" and tools.Version(self.version) >= "5.15":
+        if (
+            self.options.qtwebengine
+            and self.settings.os == "Linux"
+            and tools.Version(self.version) >= "5.15"
+        ):
             # For now avoid external prebuild dependencies...
             # self.requires("opus/1.3.1")
             pass

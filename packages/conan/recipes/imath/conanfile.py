@@ -34,7 +34,9 @@ class ImathConan(ConanFile):
         self.requires(
             f"python/{os.environ['ASWF_PYTHON_VERSION']}@{self.user}/{self.channel}"
         )
-        self.requires(f"boost/{os.environ['ASWF_BOOST_VERSION']}@{self.user}/{self.channel}")
+        self.requires(
+            f"boost/{os.environ['ASWF_BOOST_VERSION']}@{self.user}/{self.channel}"
+        )
 
     def build_requirements(self):
         if self._is_dummy():
@@ -46,11 +48,14 @@ class ImathConan(ConanFile):
     def source(self):
         if self._is_dummy():
             with open("imath-2-is-a-dummy-package.txt", "w") as f:
-                f.write("Imath only contains data starting from version 3. Use OpenEXR-2 for Imath-2")
+                f.write(
+                    "Imath only contains data starting from version 3. Use OpenEXR-2 for Imath-2"
+                )
         else:
-            tools.get(f"https://github.com/AcademySoftwareFoundation/Imath/archive/v{self.version}.tar.gz")
+            tools.get(
+                f"https://github.com/AcademySoftwareFoundation/Imath/archive/v{self.version}.tar.gz"
+            )
             os.rename(f"Imath-{self.version}", self._source_subfolder)
-            
 
     def _configure_cmake(self):
         if self._cmake:
@@ -86,4 +91,6 @@ class ImathConan(ConanFile):
         self.env_info.PYTHONPATH.append(
             os.path.join(self.package_folder, "lib", pymajorminor, "site-packages")
         )
-        self.env_info.CMAKE_PREFIX_PATH.append(os.path.join(self.package_folder, "lib", "cmake"))
+        self.env_info.CMAKE_PREFIX_PATH.append(
+            os.path.join(self.package_folder, "lib", "cmake")
+        )

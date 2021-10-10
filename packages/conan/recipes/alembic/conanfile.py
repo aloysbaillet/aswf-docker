@@ -28,8 +28,12 @@ class AlembicConan(ConanFile):
         self.requires(
             f"python/{os.environ['ASWF_PYTHON_VERSION']}@{self.user}/{self.channel}"
         )
-        self.requires(f"boost/{os.environ['ASWF_BOOST_VERSION']}@{self.user}/{self.channel}")
-        self.requires(f"openexr/{os.environ['ASWF_OPENEXR_VERSION']}@{self.user}/{self.channel}")
+        self.requires(
+            f"boost/{os.environ['ASWF_BOOST_VERSION']}@{self.user}/{self.channel}"
+        )
+        self.requires(
+            f"openexr/{os.environ['ASWF_OPENEXR_VERSION']}@{self.user}/{self.channel}"
+        )
 
     def build_requirements(self):
         self.build_requires(
@@ -38,7 +42,7 @@ class AlembicConan(ConanFile):
 
     def source(self):
         tools.get(f"https://github.com/alembic/alembic/archive/{self.version}.tar.gz")
-        os.rename(f"alembic-{self.version}", self._source_subfolder)            
+        os.rename(f"alembic-{self.version}", self._source_subfolder)
 
     # def _configure_cmake(self):
     #     if self._cmake:
