@@ -5,7 +5,7 @@ from conans import ConanFile, CMake, tools
 class Log4cplusConan(ConanFile):
     name = "log4cplus"
     description = "simple to use C++ logging API, modelled after the Java log4j API"
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
     homepage = "https://github.com/log4cplus/log4cplus"
     topics = ("conan", "log4cplus", "logging", "log", "logging-library")
     license = "BSD-2-Clause, Apache-2.0"

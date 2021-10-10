@@ -13,7 +13,7 @@ class ClangConan(ConanFile):
     license = "Apache-2.0 WITH LLVM-exception"
     topics = ("conan", "llvm", "clang")
     homepage = "https://github.com/llvm/llvm-project/tree/master/llvm"
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
 
     settings = "os", "arch", "compiler", "build_type", "devtoolset", "ci_common"
     options = {

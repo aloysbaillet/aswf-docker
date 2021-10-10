@@ -8,7 +8,7 @@ required_conan_version = ">=1.28.0"
 class GlewConan(ConanFile):
     name = "glew"
     description = "The GLEW library"
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
     homepage = "http://github.com/nigels-com/glew"
     topics = ("conan", "glew", "opengl", "wrangler", "loader", "binding")
     license = "MIT"

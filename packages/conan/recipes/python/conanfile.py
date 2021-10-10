@@ -10,7 +10,7 @@ class PythonConan(ConanFile):
     topics = ("conan", "python", "unit-test", "tdd")
     license = " LGPL-2.1-or-later"
     homepage = "https://python.org/"
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
     settings = (
         "os",
         "arch",

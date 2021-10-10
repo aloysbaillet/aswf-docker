@@ -10,7 +10,7 @@ class PyBind11Conan(ConanFile):
     topics = "conan", "pybind11", "python", "binding"
     homepage = "https://github.com/pybind/pybind11"
     license = "BSD-3-Clause"
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
     exports_sources = "CMakeLists.txt"
     settings = (
         "os",

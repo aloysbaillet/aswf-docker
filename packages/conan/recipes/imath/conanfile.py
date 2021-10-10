@@ -10,7 +10,7 @@ class ImathConan(ConanFile):
     topics = "conan", "imath", "python", "vfx"
     homepage = "https://github.com/AcademySoftwareFoundation/Imath"
     license = "BSD-3-Clause"
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
     settings = (
         "os",
         "arch",

@@ -9,7 +9,7 @@ class CppunitConan(ConanFile):
     topics = ("conan", "cppunit", "unit-test", "tdd")
     license = " LGPL-2.1-or-later"
     homepage = "https://freedesktop.org/wiki/Software/cppunit/"
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
     settings = "os", "arch", "compiler", "build_type", "ci_common", "vfx_platform"
     options = {
         "shared": [True, False],

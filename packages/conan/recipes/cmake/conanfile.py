@@ -9,7 +9,7 @@ class CMakeConan(ConanFile):
     name = "cmake"
     description = "Conan installer for CMake"
     topics = ("conan", "cmake", "build", "installer")
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
     homepage = "https://github.com/Kitware/CMake"
     license = "BSD-3-Clause"
     generators = "cmake"

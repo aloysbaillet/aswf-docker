@@ -7,7 +7,7 @@ class NinjaConan(ConanFile):
     name = "ninja"
     description = "Ninja is a small build system with a focus on speed"
     license = "Apache-2.0"
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
     homepage = "https://github.com/ninja-build/ninja"
     settings = "os", "arch", "compiler", "build_type", "ci_common"
     exports_sources = ["CMakeLists.txt", "*.patch"]

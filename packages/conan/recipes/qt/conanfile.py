@@ -82,7 +82,7 @@ class QtConan(ConanFile):
     name = "qt"
     description = "Qt is a cross-platform framework for graphical user interfaces."
     topics = ("conan", "qt", "ui")
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
     homepage = "https://www.qt.io"
     license = "LGPL-3.0"
     exports = ["patches/*.diff"]

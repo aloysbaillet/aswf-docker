@@ -13,7 +13,7 @@ class GlfwConan(ConanFile):
         "windows, contexts and surfaces, reading input, handling events, etc."
     )
     license = "Zlib"
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
     homepage = "https://github.com/glfw/glfw"
     topics = ("conan", "gflw", "opengl", "vulkan", "opengl-es")
 

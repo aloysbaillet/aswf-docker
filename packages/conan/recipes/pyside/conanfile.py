@@ -10,7 +10,7 @@ class PySideConan(ConanFile):
     topics = "conan", "pyside", "python", "binding"
     homepage = "https://www.qt.io/qt-for-python"
     license = "LGPL-3.0"
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
     settings = (
         "os",
         "arch",

@@ -46,7 +46,7 @@ class BoostConan(ConanFile):
         "vfx_platform",
     )
     description = "Boost provides free peer-reviewed portable C++ source libraries"
-    url = "https://github.com/conan-io/conan-center-index"
+    url = "https://github.com/AcademySoftwareFoundation/aswf-docker"
     homepage = "https://www.boost.org"
     license = "BSL-1.0"
     topics = "conan", "boost", "libraries", "cpp", ""
