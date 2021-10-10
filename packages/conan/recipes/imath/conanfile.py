@@ -86,4 +86,4 @@ class ImathConan(ConanFile):
         self.env_info.PYTHONPATH.append(
             os.path.join(self.package_folder, "lib", pymajorminor, "site-packages")
         )
-        self.env_info.CMAKE_PREFIX_PATH = os.path.join(self.package_folder, "lib", "cmake")
+        self.env_info.CMAKE_PREFIX_PATH.append(os.path.join(self.package_folder, "lib", "cmake"))

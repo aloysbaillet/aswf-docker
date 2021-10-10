@@ -61,7 +61,8 @@ class OpenEXRConan(ConanFile):
 
     def package(self):
         self.copy("LICENSE.md", src=self._source_subfolder, dst="licenses")
-        self.copy("FindOpenEXR.cmake", src=os.path.join(self._source_subfolder, "cmake"), dst=os.path.join("lib", "cmake"))
+        if tools.Version(self.version).major == "2" and tools.Version(self.version).minor == "3":
+            self.copy("FindOpenEXR.cmake", src=os.path.join(self._source_subfolder, "cmake"), dst=os.path.join("lib", "cmake"))
         cmake = self._configure_cmake()
         cmake.install()
 
@@ -72,7 +73,13 @@ class OpenEXRConan(ConanFile):
         self.env_info.PYTHONPATH.append(
             os.path.join(self.package_folder, "lib", pymajorminor, "site-packages")
         )
-        if tools.Version(self.version) < "3":
-            self.env_info.CMAKE_MODULE_PATH = os.path.join(self.package_folder, "lib", "cmake")
+        if tools.Version(self.version).major == "2" and tools.Version(self.version).minor == "3":
+            self.env_info.CMAKE_MODULE_PATH.append(os.path.join(self.package_folder, "lib", "cmake"))
         else:
-            self.env_info.CMAKE_PREFIX_PATH = os.path.join(self.package_folder, "lib", "cmake")
+            self.env_info.CMAKE_PREFIX_PATH.append(os.path.join(self.package_folder, "lib", "cmake"))
+
+        self.cpp_info.filenames["cmake_find_package"] = "OpenEXR"
+        self.cpp_info.filenames["cmake_find_package_multi"] = "OpenEXR"
+        self.cpp_info.libs = ["IlmImf", "IlmImfUtils"]
+        if tools.Version(self.version) >= "3":
+            self.cpp_info.requires.append("imath::imath")

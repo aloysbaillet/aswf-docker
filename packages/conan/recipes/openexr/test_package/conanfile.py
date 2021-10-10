@@ -8,13 +8,16 @@ class TestPackageConan(ConanFile):
     def build(self):
         cmake = CMake(self)
         with tools.environment_append(tools.RunEnvironment(self).vars):
-            cmake.definitions["CMAKE_MODULE_PATH"] = os.path.join(self.deps_cpp_info["openexr"].lib_paths[0], "cmake")
+            self.run("echo CMAKE_PREFIX_PATH=$CMAKE_PREFIX_PATH")
             cmake.definitions["OPENEXR_LOCATION"] = os.path.dirname(self.deps_cpp_info["openexr"].lib_paths[0])
             cmake.configure()
             cmake.build(args=["--", "VERBOSE=1"])
 
     def test(self):
         self.run("./testopenexr_exe", run_environment=True)
+        if os.environ.get("ASWF_OPENEXR_VERSION") == "2.4.0" and os.environ.get("ASWF_PYTHON_VERSION") == "3.7.3":
+            # Known incompatibility for python3...
+            return
         self.run(
             "{} {}".format(
                 self.deps_user_info["python"].python_interp,
