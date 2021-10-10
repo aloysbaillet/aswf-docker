@@ -6,125 +6,122 @@
 ARG ASWF_ORG
 ARG ASWF_PKG_ORG
 ARG CI_COMMON_VERSION
-ARG ASWF_CLANG_MAJOR_VERSION
-ARG ASWF_CONAN_CHANNEL
-ARG CONAN_USER_DATA_FOLDER
+ARG CLANG_MAJOR_VERSION
 
-ARG ASWF_BOOST_VERSION
-ARG ASWF_CMAKE_VERSION
-ARG ASWF_PYTHON_VERSION
-ARG ASWF_QT_VERSION
-ARG ASWF_IMATH_VERSION
-ARG ASWF_OPENEXR_VERSION
-ARG ASWF_OIIO_VERSION
-ARG ASWF_OCIO_VERSION
-ARG ASWF_PARTIO_VERSION
-ARG ASWF_TBB_VERSION
-ARG ASWF_BLOSC_VERSION
-ARG ASWF_OPENVDB_VERSION
-ARG ASWF_NUMPY_VERSION
-ARG ASWF_VFXPLATFORM_VERSION
-ARG ASWF_PYTHON_MAJOR_MINOR_VERSION
+ARG BOOST_VERSION
+ARG CMAKE_VERSION
+ARG PYTHON_VERSION
+ARG QT_VERSION
+ARG IMATH_VERSION
+ARG OPENEXR_VERSION
+ARG OIIO_VERSION
+ARG OCIO_VERSION
+ARG PARTIO_VERSION
+ARG TBB_VERSION
+ARG BLOSC_VERSION
+ARG OPENVDB_VERSION
+ARG NUMPY_VERSION
+ARG VFXPLATFORM_VERSION
+ARG PYTHON_VERSION_MAJOR_MINOR
 
 
+FROM ${ASWF_PKG_ORG}/ci-package-boost:$ASWF_VFXPLATFORM_VERSION-$BOOST_VERSION as ci-package-boost
+FROM ${ASWF_PKG_ORG}/ci-package-cmake:$ASWF_VFXPLATFORM_VERSION-$CMAKE_VERSION as ci-package-cmake
+FROM ${ASWF_PKG_ORG}/ci-package-python:$ASWF_VFXPLATFORM_VERSION-$PYTHON_VERSION as ci-package-python
+FROM ${ASWF_PKG_ORG}/ci-package-qt:$ASWF_VFXPLATFORM_VERSION-$QT_VERSION as ci-package-qt
+FROM ${ASWF_PKG_ORG}/ci-package-imath:$ASWF_VFXPLATFORM_VERSION-$IMATH_VERSION as ci-package-imath
+FROM ${ASWF_PKG_ORG}/ci-package-openexr:$ASWF_VFXPLATFORM_VERSION-$OPENEXR_VERSION as ci-package-openexr
+FROM ${ASWF_PKG_ORG}/ci-package-oiio:$ASWF_VFXPLATFORM_VERSION-$OIIO_VERSION as ci-package-oiio
+FROM ${ASWF_PKG_ORG}/ci-package-ocio:$ASWF_VFXPLATFORM_VERSION-$OCIO_VERSION as ci-package-ocio
+FROM ${ASWF_PKG_ORG}/ci-package-partio:$ASWF_VFXPLATFORM_VERSION-$PARTIO_VERSION as ci-package-partio
+FROM ${ASWF_PKG_ORG}/ci-package-tbb:$ASWF_VFXPLATFORM_VERSION-$TBB_VERSION as ci-package-tbb
+FROM ${ASWF_PKG_ORG}/ci-package-blosc:$ASWF_VFXPLATFORM_VERSION-$BLOSC_VERSION as ci-package-blosc
+FROM ${ASWF_PKG_ORG}/ci-package-openvdb:$ASWF_VFXPLATFORM_VERSION-$OPENVDB_VERSION as ci-package-openvdb
 FROM ${ASWF_ORG}/ci-common:${CI_COMMON_VERSION}-clang${ASWF_CLANG_MAJOR_VERSION} as ci-osl
 
 
 ARG ASWF_ORG
-ARG ASWF_PKG_ORG
 ARG ASWF_VERSION
-ARG CI_COMMON_VERSION
-ARG ASWF_CONAN_CHANNEL
-ARG CONAN_USER_DATA_FOLDER
 
-ARG ASWF_BOOST_VERSION
-ARG ASWF_CMAKE_VERSION
-ARG ASWF_PYTHON_VERSION
-ARG ASWF_QT_VERSION
-ARG ASWF_IMATH_VERSION
-ARG ASWF_OPENEXR_VERSION
-ARG ASWF_OIIO_VERSION
-ARG ASWF_OCIO_VERSION
-ARG ASWF_PARTIO_VERSION
-ARG ASWF_TBB_VERSION
-ARG ASWF_BLOSC_VERSION
-ARG ASWF_OPENVDB_VERSION
-ARG ASWF_NUMPY_VERSION
-ARG ASWF_VFXPLATFORM_VERSION
-ARG ASWF_PYTHON_MAJOR_MINOR_VERSION
+ARG BOOST_VERSION
+ARG CMAKE_VERSION
+ARG PYTHON_VERSION
+ARG QT_VERSION
+ARG IMATH_VERSION
+ARG OPENEXR_VERSION
+ARG OIIO_VERSION
+ARG OCIO_VERSION
+ARG PARTIO_VERSION
+ARG TBB_VERSION
+ARG BLOSC_VERSION
+ARG OPENVDB_VERSION
+ARG NUMPY_VERSION
+ARG VFXPLATFORM_VERSION
+ARG PYTHON_VERSION_MAJOR_MINOR
 
 
 LABEL org.opencontainers.image.name="$ASWF_ORG/ci-osl"
 LABEL org.opencontainers.image.title="OpenShadingLanguage CI Docker Image"
 LABEL org.opencontainers.image.description="Contains: Python, Boost, Qt, OpenEXR, OpenImageIO, Partio and other OpenShadingLanguage upstream dependencies\
-Warning: this image does *not* contain OpenShadingLanguage itself as it is used to *build* OpenShadingLanguage!"
+Warning: this image does *not* contain OpenShadingLanguage itself as it is used to *build* OpenShadingLanguage!\
+"
 LABEL org.opencontainers.image.url="http://aswf.io/"
 LABEL org.opencontainers.image.source="https://github.com/AcademySoftwareFoundation/aswf-docker/blob/master/ci-osl/Dockerfile"
 LABEL org.opencontainers.image.vendor="AcademySoftwareFoundation"
 LABEL org.opencontainers.image.authors="Built by aswf.io CI Working Group"
 LABEL org.opencontainers.image.version="${ASWF_VERSION}"
 
-LABEL com.vfxplatform.version="${ASWF_VFXPLATFORM_VERSION}"
+LABEL com.vfxplatform.version="${VFXPLATFORM_VERSION}"
 
-LABEL io.aswf.docker.versions.boost="$ASWF_BOOST_VERSION"
-LABEL io.aswf.docker.versions.cmake="$ASWF_CMAKE_VERSION"
-LABEL io.aswf.docker.versions.python="$ASWF_PYTHON_VERSION"
-LABEL io.aswf.docker.versions.qt="$ASWF_QT_VERSION"
-LABEL io.aswf.docker.versions.imath="$ASWF_IMATH_VERSION"
-LABEL io.aswf.docker.versions.openexr="$ASWF_OPENEXR_VERSION"
-LABEL io.aswf.docker.versions.oiio="$ASWF_OIIO_VERSION"
-LABEL io.aswf.docker.versions.ocio="$ASWF_OCIO_VERSION"
-LABEL io.aswf.docker.versions.partio="$ASWF_PARTIO_VERSION"
-LABEL io.aswf.docker.versions.tbb="$ASWF_TBB_VERSION"
-LABEL io.aswf.docker.versions.blosc="$ASWF_BLOSC_VERSION"
-LABEL io.aswf.docker.versions.openvdb="$ASWF_OPENVDB_VERSION"
-LABEL io.aswf.docker.versions.numpy="$ASWF_NUMPY_VERSION"
-LABEL io.aswf.docker.versions.vfxplatform="$ASWF_VFXPLATFORM_VERSION"
+LABEL io.aswf.docker.versions.boost="$BOOST_VERSION"
+LABEL io.aswf.docker.versions.cmake="$CMAKE_VERSION"
+LABEL io.aswf.docker.versions.python="$PYTHON_VERSION"
+LABEL io.aswf.docker.versions.qt="$QT_VERSION"
+LABEL io.aswf.docker.versions.imath="$IMATH_VERSION"
+LABEL io.aswf.docker.versions.openexr="$OPENEXR_VERSION"
+LABEL io.aswf.docker.versions.oiio="$OIIO_VERSION"
+LABEL io.aswf.docker.versions.ocio="$OCIO_VERSION"
+LABEL io.aswf.docker.versions.partio="$PARTIO_VERSION"
+LABEL io.aswf.docker.versions.tbb="$TBB_VERSION"
+LABEL io.aswf.docker.versions.blosc="$BLOSC_VERSION"
+LABEL io.aswf.docker.versions.openvdb="$OPENVDB_VERSION"
+LABEL io.aswf.docker.versions.numpy="$NUMPY_VERSION"
+LABEL io.aswf.docker.versions.vfxplatform="$VFXPLATFORM_VERSION"
 
 
 ENV ASWF_ORG=${ASWF_ORG}
 ENV ASWF_VERSION=${ASWF_VERSION}
-ENV VFXPLATFORM_VERSION=${ASWF_VFXPLATFORM_VERSION}
-
-ENV ASWF_BOOST_VERSION=$ASWF_BOOST_VERSION
-ENV ASWF_CMAKE_VERSION=$ASWF_CMAKE_VERSION
-ENV ASWF_PYTHON_VERSION=$ASWF_PYTHON_VERSION
-ENV ASWF_QT_VERSION=$ASWF_QT_VERSION
-ENV ASWF_IMATH_VERSION=$ASWF_IMATH_VERSION
-ENV ASWF_OPENEXR_VERSION=$ASWF_OPENEXR_VERSION
-ENV ASWF_OIIO_VERSION=$ASWF_OIIO_VERSION
-ENV ASWF_OCIO_VERSION=$ASWF_OCIO_VERSION
-ENV ASWF_PARTIO_VERSION=$ASWF_PARTIO_VERSION
-ENV ASWF_TBB_VERSION=$ASWF_TBB_VERSION
-ENV ASWF_BLOSC_VERSION=$ASWF_BLOSC_VERSION
-ENV ASWF_OPENVDB_VERSION=$ASWF_OPENVDB_VERSION
-ENV ASWF_NUMPY_VERSION=$ASWF_NUMPY_VERSION
-ENV ASWF_VFXPLATFORM_VERSION=$ASWF_VFXPLATFORM_VERSION
-ENV ASWF_PYTHON_MAJOR_MINOR_VERSION=$ASWF_PYTHON_MAJOR_MINOR_VERSION
+ENV BOOST_VERSION=$BOOST_VERSION
+ENV CMAKE_VERSION=$CMAKE_VERSION
+ENV PYTHON_VERSION=$PYTHON_VERSION
+ENV QT_VERSION=$QT_VERSION
+ENV IMATH_VERSION=$IMATH_VERSION
+ENV OPENEXR_VERSION=$OPENEXR_VERSION
+ENV OIIO_VERSION=$OIIO_VERSION
+ENV OCIO_VERSION=$OCIO_VERSION
+ENV PARTIO_VERSION=$PARTIO_VERSION
+ENV TBB_VERSION=$TBB_VERSION
+ENV BLOSC_VERSION=$BLOSC_VERSION
+ENV OPENVDB_VERSION=$OPENVDB_VERSION
+ENV NUMPY_VERSION=$NUMPY_VERSION
+ENV VFXPLATFORM_VERSION=$VFXPLATFORM_VERSION
+ENV PYTHON_VERSION_MAJOR_MINOR=$PYTHON_VERSION_MAJOR_MINOR
 
 
+COPY --from=ci-package-boost /. /usr/local/
+COPY --from=ci-package-cmake /. /usr/local/
+COPY --from=ci-package-python /. /usr/local/
+COPY --from=ci-package-qt /. /usr/local/
+COPY --from=ci-package-imath /. /usr/local/
+COPY --from=ci-package-openexr /. /usr/local/
+COPY --from=ci-package-oiio /. /usr/local/
+COPY --from=ci-package-ocio /. /usr/local/
+COPY --from=ci-package-partio /. /usr/local/
+COPY --from=ci-package-tbb /. /usr/local/
+COPY --from=ci-package-blosc /. /usr/local/
+COPY --from=ci-package-openvdb /. /usr/local/
 COPY ci-osl/README.md ci-osl/image.yaml /usr/local/aswf/
 
 
 
-ENV PYTHONPATH=/usr/local/lib/python${ASWF_PYTHON_MAJOR_MINOR_VERSION}/site-packages:/usr/local/lib64/python${ASWF_PYTHON_MAJOR_MINOR_VERSION}/site-packages:/usr/local/lib/python:${PYTHONPATH}
-RUN cd /usr/local/ && \
-    echo $'[generators]\n\
-cmake\n\
-[imports]\n\
-., * -> .\n\
-[requires]\n' >> /usr/local/conanfile.txt && \
-echo "boost/${ASWF_BOOST_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "cmake/${ASWF_CMAKE_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "python/${ASWF_PYTHON_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "qt/${ASWF_QT_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "imath/${ASWF_IMATH_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "openexr/${ASWF_OPENEXR_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "oiio/${ASWF_OIIO_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "ocio/${ASWF_OCIO_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "partio/${ASWF_PARTIO_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "tbb/${ASWF_TBB_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "blosc/${ASWF_BLOSC_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "openvdb/${ASWF_OPENVDB_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-conan install . && \
-    rm -rf ${CONAN_USER_DATA_FOLDER}/*
+ENV PYTHONPATH=/usr/local/lib/python${PYTHON_VERSION_MAJOR_MINOR}/site-packages:/usr/local/lib64/python${PYTHON_VERSION_MAJOR_MINOR}/site-packages:/usr/local/lib/python:${PYTHONPATH}
