@@ -213,11 +213,9 @@ def migrate(from_org, to_org, package, version, dry_run):
     """Migrates packages from a Docker Hub org to another."""
     m = migrater.Migrater(from_org, to_org)
     m.gather(package, version)
+    mig_list = "\n".join(f"{mi.source} -> {mi.destination}" for mi in m.migration_list)
     if not click.confirm(
-        "Are you sure you want to migrate the following {} packages?\n{}\n".format(
-            len(m.migration_list),
-            "\n".join(f"{mi.source} -> {mi.destination}" for mi in m.migration_list),
-        )
+        f"Are you sure you want to migrate the following {len(m.migration_list)} packages?\n{mig_list}\n"
     ):
         click.echo("Migration cancelled.")
         return
@@ -384,6 +382,7 @@ def release(
         sha=sha,
     )
     r.gather()
+    rels = "\n".join(tag for _, _, tag in r.release_list)
     if not click.confirm(
         "Are you sure you want to create the following {} release on sha={}?\n{}\n".format(
             len(r.release_list),

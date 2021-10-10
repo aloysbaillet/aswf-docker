@@ -21,7 +21,7 @@ types-requests = "*"
 [packages]
 aswfdocker = {editable = true, path = "."}
 click = "*"
-pygithub = "*"
+pygithub = "==1.53" # Needed to work with Conan 1.41
 pyyaml = "*"
 jinja2 = "*"
 requests = "*"

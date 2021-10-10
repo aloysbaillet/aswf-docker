@@ -60,7 +60,9 @@ class PySideConan(ConanFile):
     def build(self):
         vars = tools.RunEnvironment(self).vars
         vars.update(
-            {"Qt5_DIR": self.build_folder,}
+            {
+                "Qt5_DIR": self.build_folder,
+            }
         )
         with tools.environment_append(vars):
             self.run(

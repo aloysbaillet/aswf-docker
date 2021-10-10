@@ -236,15 +236,20 @@ class QtConan(ConanFile):
                     ]
 
         for m in submodules_tree:
-            assert m in ["qtbase", "qtqa", "qtrepotools"] or m in self._submodules, (
-                "module %s is not present in recipe options : (%s)"
-                % (m, ",".join(self._submodules))
+            assert (
+                m in ["qtbase", "qtqa", "qtrepotools"] or m in self._submodules
+            ), "module %s is not present in recipe options : (%s)" % (
+                m,
+                ",".join(self._submodules),
             )
 
         for m in self._submodules:
-            assert m in submodules_tree, (
-                "module %s is not present in qtmodules%s.conf : (%s)"
-                % (m, self.version, ",".join(submodules_tree))
+            assert (
+                m in submodules_tree
+            ), "module %s is not present in qtmodules%s.conf : (%s)" % (
+                m,
+                self.version,
+                ",".join(submodules_tree),
             )
 
         def _enablemodule(mod):
@@ -1107,7 +1112,13 @@ Examples = bin/datadir/examples"""
 
         if self.options.qtwebengine:
             _create_module(
-                "WebEngineCore", ["Gui", "Quick", "WebChannel", "Positioning",],
+                "WebEngineCore",
+                [
+                    "Gui",
+                    "Quick",
+                    "WebChannel",
+                    "Positioning",
+                ],
             )
             _create_module("WebEngine", ["WebEngineCore"])
             _create_module(
@@ -1197,7 +1208,10 @@ Examples = bin/datadir/examples"""
             ]
             if qt_version >= "5.15":
                 extras.extend(
-                    ["3DExtras", "3DInput",]
+                    [
+                        "3DExtras",
+                        "3DInput",
+                    ]
                 )
                 _create_module("3DQuickExtras", extras)
             if qt_version >= "5.15":
