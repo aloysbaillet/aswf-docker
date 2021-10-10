@@ -109,7 +109,7 @@ class Builder:
 
     def _run(self, cmd: str, dry_run: bool):
         if dry_run:
-            logger.info("Would build: '%s'", cmd)
+            logger.info("Would run: '%s'", cmd)
         else:
             logger.info("Building: '%s'", cmd)
             subprocess.run(cmd, shell=True, check=True, cwd=self.build_info.repo_root)
