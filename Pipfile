@@ -17,6 +17,7 @@ types-jinja2 = "*"
 types-pyyaml = "*"
 types-requests = "*"
 # pipenv-setup = "*" # commented for now as it requires a very old black version!
+aswfdocker = {editable = true, path = "."}
 
 [packages]
 aswfdocker = {editable = true, path = "."}

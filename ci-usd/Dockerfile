@@ -10,30 +10,49 @@ ARG ASWF_CLANG_MAJOR_VERSION
 ARG ASWF_CONAN_CHANNEL
 ARG CONAN_USER_DATA_FOLDER
 
-ARG ASWF_PYTHON_VERSION
-ARG ASWF_TBB_VERSION
-ARG ASWF_BOOST_VERSION
-ARG ASWF_GLEW_VERSION
-ARG ASWF_GLFW_VERSION
-ARG ASWF_LOG4CPLUS_VERSION
-ARG ASWF_QT_VERSION
-ARG ASWF_PYSIDE_VERSION
-ARG ASWF_CMAKE_VERSION
-ARG ASWF_IMATH_VERSION
-ARG ASWF_OPENEXR_VERSION
-ARG ASWF_OIIO_VERSION
-ARG ASWF_OCIO_VERSION
-ARG ASWF_PTEX_VERSION
-ARG ASWF_OPENSUBDIV_VERSION
-ARG ASWF_ALEMBIC_VERSION
-ARG ASWF_BLOSC_VERSION
-ARG ASWF_OPENVDB_VERSION
-ARG ASWF_NUMPY_VERSION
-ARG ASWF_HDF5_VERSION
-ARG ASWF_VFXPLATFORM_VERSION
-ARG ASWF_PYTHON_MAJOR_MINOR_VERSION
+ARG ASWF_PYTHON_VERSION_POOPOO
+ARG ASWF_TBB_VERSION_POOPOO
+ARG ASWF_BOOST_VERSION_POOPOO
+ARG ASWF_GLEW_VERSION_POOPOO
+ARG ASWF_GLFW_VERSION_POOPOO
+ARG ASWF_LOG4CPLUS_VERSION_POOPOO
+ARG ASWF_QT_VERSION_POOPOO
+ARG ASWF_PYSIDE_VERSION_POOPOO
+ARG ASWF_CMAKE_VERSION_POOPOO
+ARG ASWF_IMATH_VERSION_POOPOO
+ARG ASWF_OPENEXR_VERSION_POOPOO
+ARG ASWF_OIIO_VERSION_POOPOO
+ARG ASWF_OCIO_VERSION_POOPOO
+ARG ASWF_PTEX_VERSION_POOPOO
+ARG ASWF_OPENSUBDIV_VERSION_POOPOO
+ARG ASWF_ALEMBIC_VERSION_POOPOO
+ARG ASWF_BLOSC_VERSION_POOPOO
+ARG ASWF_OPENVDB_VERSION_POOPOO
+ARG ASWF_NUMPY_VERSION_POOPOO
+ARG ASWF_HDF5_VERSION_POOPOO
+ARG ASWF_VFXPLATFORM_VERSION_POOPOO
+ARG ASWF_PYTHON_MAJOR_MINOR_VERSION_OIHOI
 
 
+# Comment out this block to use Conan packages
+FROM ${ASWF_PKG_ORG}/ci-package-python:$ASWF_VFXPLATFORM_VERSION-$ASWF_PYTHON_VERSION as ci-package-python
+FROM ${ASWF_PKG_ORG}/ci-package-tbb:$ASWF_VFXPLATFORM_VERSION-$ASWF_TBB_VERSION as ci-package-tbb
+FROM ${ASWF_PKG_ORG}/ci-package-boost:$ASWF_VFXPLATFORM_VERSION-$ASWF_BOOST_VERSION as ci-package-boost
+FROM ${ASWF_PKG_ORG}/ci-package-glew:$ASWF_VFXPLATFORM_VERSION-$ASWF_GLEW_VERSION as ci-package-glew
+FROM ${ASWF_PKG_ORG}/ci-package-glfw:$ASWF_VFXPLATFORM_VERSION-$ASWF_GLFW_VERSION as ci-package-glfw
+FROM ${ASWF_PKG_ORG}/ci-package-log4cplus:$ASWF_VFXPLATFORM_VERSION-$ASWF_LOG4CPLUS_VERSION as ci-package-log4cplus
+FROM ${ASWF_PKG_ORG}/ci-package-qt:$ASWF_VFXPLATFORM_VERSION-$ASWF_QT_VERSION as ci-package-qt
+FROM ${ASWF_PKG_ORG}/ci-package-pyside:$ASWF_VFXPLATFORM_VERSION-$ASWF_PYSIDE_VERSION as ci-package-pyside
+FROM ${ASWF_PKG_ORG}/ci-package-cmake:$ASWF_VFXPLATFORM_VERSION-$ASWF_CMAKE_VERSION as ci-package-cmake
+FROM ${ASWF_PKG_ORG}/ci-package-imath:$ASWF_VFXPLATFORM_VERSION-$ASWF_IMATH_VERSION as ci-package-imath
+FROM ${ASWF_PKG_ORG}/ci-package-openexr:$ASWF_VFXPLATFORM_VERSION-$ASWF_OPENEXR_VERSION as ci-package-openexr
+FROM ${ASWF_PKG_ORG}/ci-package-oiio:$ASWF_VFXPLATFORM_VERSION-$ASWF_OIIO_VERSION as ci-package-oiio
+FROM ${ASWF_PKG_ORG}/ci-package-ocio:$ASWF_VFXPLATFORM_VERSION-$ASWF_OCIO_VERSION as ci-package-ocio
+FROM ${ASWF_PKG_ORG}/ci-package-ptex:$ASWF_VFXPLATFORM_VERSION-$ASWF_PTEX_VERSION as ci-package-ptex
+FROM ${ASWF_PKG_ORG}/ci-package-opensubdiv:$ASWF_VFXPLATFORM_VERSION-$ASWF_OPENSUBDIV_VERSION as ci-package-opensubdiv
+FROM ${ASWF_PKG_ORG}/ci-package-alembic:$ASWF_VFXPLATFORM_VERSION-$ASWF_ALEMBIC_VERSION as ci-package-alembic
+FROM ${ASWF_PKG_ORG}/ci-package-blosc:$ASWF_VFXPLATFORM_VERSION-$ASWF_BLOSC_VERSION as ci-package-blosc
+FROM ${ASWF_PKG_ORG}/ci-package-openvdb:$ASWF_VFXPLATFORM_VERSION-$ASWF_OPENVDB_VERSION as ci-package-openvdb
 FROM ${ASWF_ORG}/ci-common:${CI_COMMON_VERSION}-clang${ASWF_CLANG_MAJOR_VERSION} as ci-usd
 
 
@@ -131,34 +150,55 @@ ENV ASWF_VFXPLATFORM_VERSION=$ASWF_VFXPLATFORM_VERSION
 ENV ASWF_PYTHON_MAJOR_MINOR_VERSION=$ASWF_PYTHON_MAJOR_MINOR_VERSION
 
 
+# Comment out this block to use Conan packages
+COPY --from=ci-package-python /. /usr/local/
+COPY --from=ci-package-tbb /. /usr/local/
+COPY --from=ci-package-boost /. /usr/local/
+COPY --from=ci-package-glew /. /usr/local/
+COPY --from=ci-package-glfw /. /usr/local/
+COPY --from=ci-package-log4cplus /. /usr/local/
+COPY --from=ci-package-qt /. /usr/local/
+COPY --from=ci-package-pyside /. /usr/local/
+COPY --from=ci-package-cmake /. /usr/local/
+COPY --from=ci-package-imath /. /usr/local/
+COPY --from=ci-package-openexr /. /usr/local/
+COPY --from=ci-package-oiio /. /usr/local/
+COPY --from=ci-package-ocio /. /usr/local/
+COPY --from=ci-package-ptex /. /usr/local/
+COPY --from=ci-package-opensubdiv /. /usr/local/
+COPY --from=ci-package-alembic /. /usr/local/
+COPY --from=ci-package-blosc /. /usr/local/
+COPY --from=ci-package-openvdb /. /usr/local/
 COPY ci-usd/README.md ci-usd/image.yaml /usr/local/aswf/
 
 
 
 ENV PYTHONPATH=/usr/local/lib/python${ASWF_PYTHON_MAJOR_MINOR_VERSION}/site-packages:/usr/local/lib64/python${ASWF_PYTHON_MAJOR_MINOR_VERSION}/site-packages:/usr/local/lib/python:${PYTHONPATH}
-RUN cd /usr/local/ && \
-    echo $'[generators]\n\
-cmake\n\
-[imports]\n\
-., * -> .\n\
-[requires]\n' >> /usr/local/conanfile.txt && \
-echo "python/${ASWF_PYTHON_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "tbb/${ASWF_TBB_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "boost/${ASWF_BOOST_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "glew/${ASWF_GLEW_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "glfw/${ASWF_GLFW_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "log4cplus/${ASWF_LOG4CPLUS_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "qt/${ASWF_QT_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "pyside/${ASWF_PYSIDE_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "cmake/${ASWF_CMAKE_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "imath/${ASWF_IMATH_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "openexr/${ASWF_OPENEXR_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "oiio/${ASWF_OIIO_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "ocio/${ASWF_OCIO_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "ptex/${ASWF_PTEX_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "opensubdiv/${ASWF_OPENSUBDIV_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "alembic/${ASWF_ALEMBIC_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "blosc/${ASWF_BLOSC_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "openvdb/${ASWF_OPENVDB_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-conan install . && \
-    rm -rf ${CONAN_USER_DATA_FOLDER}/*
+# Uncomment to use Conan packages instead of Docker ones
+# 
+# RUN cd /usr/local/ && \
+#     echo $'[generators]\n\
+# cmake\n\
+# [imports]\n\
+# ., * -> .\n\
+# [requires]\n' >> /usr/local/conanfile.txt && \
+# #     echo "python/${ASWF_PYTHON_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "tbb/${ASWF_TBB_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "boost/${ASWF_BOOST_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "glew/${ASWF_GLEW_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "glfw/${ASWF_GLFW_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "log4cplus/${ASWF_LOG4CPLUS_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "qt/${ASWF_QT_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "pyside/${ASWF_PYSIDE_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "cmake/${ASWF_CMAKE_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "imath/${ASWF_IMATH_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "openexr/${ASWF_OPENEXR_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "oiio/${ASWF_OIIO_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "ocio/${ASWF_OCIO_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "ptex/${ASWF_PTEX_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "opensubdiv/${ASWF_OPENSUBDIV_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "alembic/${ASWF_ALEMBIC_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "blosc/${ASWF_BLOSC_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "openvdb/${ASWF_OPENVDB_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     conan install . && \
+#     rm -rf ${CONAN_USER_DATA_FOLDER}/*

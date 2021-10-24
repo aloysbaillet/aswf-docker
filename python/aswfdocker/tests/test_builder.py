@@ -32,6 +32,38 @@ class TestBuilder(unittest.TestCase):
                 targets=[],
             ),
         )
+        qt_version = list(
+            index.Index().iter_versions(constants.ImageType.PACKAGE, "qt")
+        )[0]
+        baked = b.make_bake_dict()
+        self.assertEqual(
+            baked["target"]["ci-package-qt-2019"]["tags"],
+            [
+                f"{constants.DOCKER_REGISTRY}/aswflocaltesting/ci-package-qt:2019",
+                f"{constants.DOCKER_REGISTRY}/aswflocaltesting/ci-package-qt:{qt_version}",
+                f"{constants.DOCKER_REGISTRY}/aswflocaltesting/ci-package-qt:latest",
+                f"{constants.DOCKER_REGISTRY}/aswflocaltesting/ci-package-qt:2019-5.12.6",
+            ],
+        )
+        self.assertEqual(
+            baked["target"]["ci-package-qt-2019"]["args"]["ASWF_VERSION"], qt_version
+        )
+        self.assertEqual(
+            baked["target"]["ci-package-qt-2019"]["dockerfile"],
+            "packages/base2/Dockerfile",
+        )
+
+    def test_package_baseqt_2019_dict_conan(self):
+        b = builder.Builder(
+            self.build_info,
+            groupinfo.GroupInfo(
+                names=["base2"],
+                versions=["2019"],
+                type_=constants.ImageType.PACKAGE,
+                targets=[],
+            ),
+            use_conan=True,
+        )
         baked = b.make_bake_dict()
         self.assertIn("ASWF_QT_VERSION", baked["target"]["ci-package-qt-1"]["args"])
         self.assertEqual(
@@ -323,6 +355,33 @@ class TestBuilderCli(unittest.TestCase):
         bake_path = os.path.join(
             tempfile.gettempdir(), "docker-bake-PACKAGE-vfx1-2019.json"
         )
+        cmd = f"docker buildx bake -f {bake_path} --progress auto"
+        self.assertEqual(
+            result.output,
+            f"INFO:aswfdocker.builder:Would run: '{cmd}'\n",
+        )
+        self.assertEqual(result.exit_code, 0)
+
+    def test_builder_cli_conan(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            aswfdocker.cli,
+            [
+                "build",
+                "--ci-image-type",
+                "PACKAGE",
+                "--version",
+                "2019",
+                "--target",
+                "openexr",
+                "--dry-run",
+                "--use-conan",
+            ],
+        )
+        self.assertFalse(result.exception)
+        bake_path = os.path.join(
+            tempfile.gettempdir(), "docker-bake-PACKAGE-vfx1-2019.json"
+        )
         cmds = result.output.strip().splitlines()
         self.assertEqual(len(cmds), 3)
         self.assertEqual(
@@ -379,6 +438,35 @@ class TestBuilderCli(unittest.TestCase):
                 "--target",
                 "openexr",
                 "--dry-run",
+            ],
+        )
+        self.assertFalse(result.exception)
+        bake_path = os.path.join(
+            tempfile.gettempdir(), "docker-bake-PACKAGE-vfx1-2019-2020.json"
+        )
+        cmd = f"docker buildx bake -f {bake_path} --progress auto"
+        self.assertEqual(
+            result.output,
+            f"INFO:aswfdocker.builder:Would run: '{cmd}'\n",
+        )
+        self.assertEqual(result.exit_code, 0)
+
+    def test_builderlist_cli_conan(self):
+        runner = CliRunner()
+        result = runner.invoke(
+            aswfdocker.cli,
+            [
+                "build",
+                "--ci-image-type",
+                "PACKAGE",
+                "--version",
+                "2019",
+                "--version",
+                "2020",
+                "--target",
+                "openexr",
+                "--dry-run",
+                "--use-conan",
             ],
         )
         self.assertFalse(result.exception)

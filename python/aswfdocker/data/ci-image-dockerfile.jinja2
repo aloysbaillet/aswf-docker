@@ -15,14 +15,20 @@ ARG {{ arg }}
 {% endfor -%}
 
 {% for package in packages + implicit_packages -%}
-ARG ASWF_{{package.upper()}}_VERSION
+ARG ASWF_{{package.upper()}}_VERSION_POOPOO
 {% endfor -%}
 
 {% for package in packages + implicit_packages -%}
 {% for arg in index.package_data(package).get("docker_args", []) -%}
-ARG {{ arg }}
+ARG {{ arg }}_OIHOI
 {% endfor -%}
 {% endfor %}
+
+# Comment out this block to use Conan packages
+{% for package in packages -%}
+FROM ${ASWF_PKG_ORG}/ci-package-{{ package }}:{{docker_package_version}}-$ASWF_{{package.upper()}}_VERSION as ci-package-{{ package }}
+{% endfor -%}
+
 
 FROM {{ docker_from }} as ci-{{ name }}
 
@@ -81,6 +87,11 @@ ENV {{ arg }}=${{ arg }}
 {% endfor -%}
 {% endfor %}
 
+# Comment out this block to use Conan packages
+{% for package in packages -%}
+COPY --from=ci-package-{{ package }} /. /usr/local/
+{% endfor -%}
+
 COPY ci-{{name}}/README.md ci-{{name}}/image.yaml /usr/local/aswf/
 
 {{ docker_commands }}
@@ -89,14 +100,16 @@ COPY ci-{{name}}/README.md ci-{{name}}/image.yaml /usr/local/aswf/
 {{ index.package_data(package).get("docker_commands", "") -}}
 {% endfor -%}
 
-RUN cd /usr/local/ && \
-    echo $'[generators]\n\
-cmake\n\
-[imports]\n\
-., * -> .\n\
-[requires]\n' >> /usr/local/conanfile.txt && \
-{% for package in packages -%}
-    echo "{{package}}/${ASWF_{{package.upper()}}_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-{% endfor -%}
-    conan install . && \
-    rm -rf ${CONAN_USER_DATA_FOLDER}/*
+# Uncomment to use Conan packages instead of Docker ones
+# 
+# RUN cd /usr/local/ && \
+#     echo $'[generators]\n\
+# cmake\n\
+# [imports]\n\
+# ., * -> .\n\
+# [requires]\n' >> /usr/local/conanfile.txt && \
+# {% for package in packages -%}
+#     echo "{{package}}/${ASWF_{{package.upper()}}_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# {% endfor -%}
+#     conan install . && \
+#     rm -rf ${CONAN_USER_DATA_FOLDER}/*

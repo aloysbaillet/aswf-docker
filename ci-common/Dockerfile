@@ -10,16 +10,19 @@ ARG ASWF_CLANG_MAJOR_VERSION
 ARG ASWF_CONAN_CHANNEL
 ARG CONAN_USER_DATA_FOLDER
 
-ARG ASWF_CLANG_VERSION
-ARG ASWF_NINJA_VERSION
-ARG ASWF_CUDA_VERSION
-ARG ASWF_CCACHE_VERSION
-ARG ASWF_DTS_VERSION
-ARG ASWF_SONAR_VERSION
-ARG ASWF_CONAN_VERSION
-ARG ASWF_CONAN_PYTHON_VERSION
+ARG ASWF_CLANG_VERSION_POOPOO
+ARG ASWF_NINJA_VERSION_POOPOO
+ARG ASWF_CUDA_VERSION_POOPOO
+ARG ASWF_CCACHE_VERSION_POOPOO
+ARG ASWF_DTS_VERSION_POOPOO
+ARG ASWF_SONAR_VERSION_POOPOO
+ARG ASWF_CONAN_VERSION_POOPOO
+ARG ASWF_CONAN_PYTHON_VERSION_OIHOI
 
 
+# Comment out this block to use Conan packages
+FROM ${ASWF_PKG_ORG}/ci-package-clang:$CI_COMMON_VERSION-$ASWF_CLANG_VERSION as ci-package-clang
+FROM ${ASWF_PKG_ORG}/ci-package-ninja:$CI_COMMON_VERSION-$ASWF_NINJA_VERSION as ci-package-ninja
 FROM nvidia/cudagl:${ASWF_CUDA_VERSION}-devel-centos7 as ci-common
 
 
@@ -74,6 +77,9 @@ ENV ASWF_CONAN_VERSION=$ASWF_CONAN_VERSION
 ENV ASWF_CONAN_PYTHON_VERSION=$ASWF_CONAN_PYTHON_VERSION
 
 
+# Comment out this block to use Conan packages
+COPY --from=ci-package-clang /. /usr/local/
+COPY --from=ci-package-ninja /. /usr/local/
 COPY ci-common/README.md ci-common/image.yaml /usr/local/aswf/
 
 USER root
@@ -119,13 +125,15 @@ COPY ../packages/conan/settings /opt/conan_home/.conan
 ENV CONAN_USER_HOME=/opt/conan_home
 
 
-RUN cd /usr/local/ && \
-    echo $'[generators]\n\
-cmake\n\
-[imports]\n\
-., * -> .\n\
-[requires]\n' >> /usr/local/conanfile.txt && \
-echo "clang/${ASWF_CLANG_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-echo "ninja/${ASWF_NINJA_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
-conan install . && \
-    rm -rf ${CONAN_USER_DATA_FOLDER}/*
+# Uncomment to use Conan packages instead of Docker ones
+# 
+# RUN cd /usr/local/ && \
+#     echo $'[generators]\n\
+# cmake\n\
+# [imports]\n\
+# ., * -> .\n\
+# [requires]\n' >> /usr/local/conanfile.txt && \
+# #     echo "clang/${ASWF_CLANG_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     echo "ninja/${ASWF_NINJA_VERSION}@${ASWF_PKG_ORG}/${ASWF_CONAN_CHANNEL}" >> /usr/local/conanfile.txt && \
+# #     conan install . && \
+#     rm -rf ${CONAN_USER_DATA_FOLDER}/*

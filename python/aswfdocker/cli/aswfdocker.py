@@ -152,6 +152,7 @@ def get_group_info(build_info, ci_image_type, groups, versions, full_name, targe
     default="auto",
     help='Set type of progress output for "docker buildx bake" command.',
 )
+@click.option("--use-conan", "-c", is_flag=True, help="Use Conan to build packages")
 @click.option(
     "--keep-source", "-ks", is_flag=True, help="Instruct Conan to keep sources"
 )
@@ -172,6 +173,7 @@ def build(
     push,
     dry_run,
     progress,
+    use_conan,
     keep_source,
     keep_build,
 ):
@@ -186,7 +188,9 @@ def build(
     group_info = get_group_info(
         build_info, ci_image_type, group, version, full_name, target
     )
-    b = builder.Builder(build_info=build_info, group_info=group_info, push=pushb)
+    b = builder.Builder(
+        build_info=build_info, group_info=group_info, push=pushb, use_conan=use_conan
+    )
     b.build(
         dry_run=dry_run,
         progress=progress,
@@ -404,8 +408,13 @@ def release(
 @click.option(
     "--check", "-c", is_flag=True, help="Checks that the current files are up to date."
 )
-def dockergen(context, image_name, check):
+@click.option("--verbose", "-v", is_flag=True, help="Enables verbose mode.")
+def dockergen(context, image_name, check, verbose):
     """Generates a Docker file and readme from image data and template"""
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
     if image_name == "all":
         imgs = []
         for gimages in index.Index().groups[constants.ImageType.IMAGE].values():

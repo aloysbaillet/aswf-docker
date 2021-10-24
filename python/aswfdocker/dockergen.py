@@ -33,6 +33,7 @@ class DockerGen:
 
     def _render_template(self, template_name, path):
         template = self.env.get_template(template_name)
+        logger.debug("_render_template template=%s", template)
         dockerfile_path = os.path.join(
             utils.get_git_top_level(), f"ci-{self.image_name}/{path}"
         )
