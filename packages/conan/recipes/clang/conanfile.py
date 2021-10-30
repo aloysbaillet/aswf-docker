@@ -68,7 +68,7 @@ class ClangConan(ConanFile):
         cmake.definitions["LLVM_TOOL_LLVM_SIZE_BUILD"] = False
         cmake.definitions["LLVM_TOOL_LLVM_SPLIT_BUILD"] = False
         cmake.definitions["LLVM_TOOL_LLVM_STRESS_BUILD"] = False
-        cmake.definitions["LLVM_TOOL_LLVM_SYMBOLIZER_BUILD"] = False
+        cmake.definitions["LLVM_TOOL_LLVM_SYMBOLIZER_BUILD"] = True
         cmake.definitions["LLVM_TOOL_LLVM_LTO_BUILD"] = False
         cmake.definitions["LLVM_INCLUDE_EXAMPLES"] = False
         cmake.definitions["CMAKE_SKIP_RPATH"] = True
