@@ -15,12 +15,12 @@ ARG {{ arg }}
 {% endfor -%}
 
 {% for package in packages + implicit_packages -%}
-ARG ASWF_{{package.upper()}}_VERSION_POOPOO
+ARG ASWF_{{package.upper()}}_VERSION
 {% endfor -%}
 
 {% for package in packages + implicit_packages -%}
 {% for arg in index.package_data(package).get("docker_args", []) -%}
-ARG {{ arg }}_OIHOI
+ARG {{ arg }}
 {% endfor -%}
 {% endfor %}
 

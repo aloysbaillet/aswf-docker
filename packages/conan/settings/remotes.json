@@ -6,12 +6,12 @@
    "verify_ssl": true
   },
   {
-    "name": "aswf-conan",
+    "name": "aswf",
     "url": "https://linuxfoundation.jfrog.io/artifactory/api/conan/aswf-conan",
     "verify_ssl": true
    },
    {
-     "name": "aswf-conan-dev",
+     "name": "aswfdev",
      "url": "https://linuxfoundation.jfrog.io/artifactory/api/conan/aswf-conan-dev",
      "verify_ssl": true
     }
