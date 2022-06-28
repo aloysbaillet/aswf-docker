@@ -2,21 +2,25 @@
 # SPDX-License-Identifier: Apache-2.0
 from setuptools import setup, find_packages
 
-with open("python/README.md", "r") as fh:
-    long_description = fh.read()
+from pathlib import Path
+
+this_directory = Path(__file__).parent
+long_description = (this_directory / "python" / "README.md").read_text()
+license = (this_directory / "LICENSE").read_text()
 
 setup(
     name="aswfdocker",
-    version="0.7.0",
+    version="0.7.1",
     author="Aloys Baillet",
     author_email="aloys.baillet+github@gmail.com",
     description="ASWF Docker Utilities",
     long_description=long_description,
     long_description_content_type="text/markdown",
+    license=license,
     url="https://github.com/AcademySoftwareFoundation/aswf-docker",
     packages=find_packages(where="python"),
     package_dir={"": "python"},
-    package_data={"aswfdocker": ["data/*.yaml", "data/*.jinja2"]},
+    package_data={"aswfdocker": ["data/*.yaml", "data/*.jinja2", "README.md"]},
     include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",

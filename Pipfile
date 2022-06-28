@@ -19,6 +19,7 @@ types-requests = "*"
 pipenv-setup = "*"
 aswfdocker = {editable = true, path = "."}
 twine = "*"
+build = "*"
 
 [packages]
 aswfdocker = {editable = true, path = "."}

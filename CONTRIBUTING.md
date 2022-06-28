@@ -454,4 +454,24 @@ aswfdocker release -t IMAGE -g base -v 2018 -v 2019 -v 2020 -v 2021 --docker-org
 aswfdocker release -t IMAGE -g vfx1 -v 2018 -v 2019 -v 2020 -v 2021 --docker-org aswf -m "RELEASE_NOTES!"
 aswfdocker release -t IMAGE -g vfx2 -v 2018 -v 2019 -v 2020 -v 2021 --docker-org aswf -m "RELEASE_NOTES!"
 aswfdocker release -t IMAGE -g vfx3 -v 2018-clang7 -v 2019-clang6 -v 2019-clang7 -v 2019-clang8 -v 2019-clang9 -v 2020-clang7 -v 2021-clang10 -v 2021-clang11 --docker-org aswf -m "RELEASE_NOTES!"
+
+# For just 2022:
+aswfdocker release -t IMAGE -g vfx3 2022-clang10 -v 2022-clang11 -v 2022-clang12 -v 2022-clang13 -v 2022-clang14 --docker-org aswf -m "RELEASE_NOTES!"
 ```
+
+## Releasing `aswfdocker` on pypi
+
+* First, build the package for distribution:
+```bash
+python3 -m build
+```
+* Then upload to a test pypi server:
+```bash
+python3 -m twine upload --repository testpypi dist/*
+```
+* Once this worked and the package looks good on testpypi, do the actual release:
+```bash
+python3 -m twine upload dist/*
+```
+
+Et voila!
